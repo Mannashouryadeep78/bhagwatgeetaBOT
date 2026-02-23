@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bhagavad Gita Wisdom</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Poppins:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <!-- Krishna Background Overlay -->
+    <div class="krishna-bg"></div>
+
+    <div class="container">
+      <div class="header">
+        <h1>🪷 Bhagavad Gita Wisdom</h1>
+        <p>Timeless guidance for modern life</p>
+      </div>
+
+      <div class="chat-container" id="chatContainer">
+        <div class="message bot-message">
+          <div class="message-content">
+            🙏 Namaste! I am your guide to the Bhagavad Gita. Ask me about duty,
+            karma, devotion, or life wisdom.
+          </div>
+        </div>
+      </div>
+
+      <div class="input-container">
+        <input
+          type="text"
+          id="questionInput"
+          placeholder="Ask Krishna your question…"
+          onkeypress="handleKeyPress(event)"
+        />
+        <button onclick="sendQuestion()" id="sendButton">Send</button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
