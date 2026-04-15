@@ -75,8 +75,9 @@ function applyAuthToNav() {
       <span style="color:rgba(245,230,161,0.7);font-size:13px;">
         🙏 ${user.name.split(' ')[0]}
       </span>
+      <a href="profile.html" class="btn-ghost">Profile</a>
       <a href="chat.html" class="btn-gold">Open Chat</a>
-      <button class="btn-ghost" onclick="logout()">Logout</button>
+      <button class="btn-ghost" onclick="logout()" style="padding: 9px 16px;">Logout</button>
     `;
   } else {
     actionsEl.innerHTML = `

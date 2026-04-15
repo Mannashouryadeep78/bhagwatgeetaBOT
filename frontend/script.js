@@ -5,25 +5,32 @@ const API_URL = window.location.hostname === 'localhost' || window.location.host
 
 // ── Track the currently viewed history item ───────────────────────────────────
 let activeHistoryId = null;
+let lastQuestion = '';   // used by retry button
 
 // ═════════════════════════════════════════════════════════════════════════════
 //  CHAT
 // ═════════════════════════════════════════════════════════════════════════════
 
-async function sendQuestion() {
+async function sendQuestion(retryQuestion) {
   const input = document.getElementById('questionInput');
-  const question = input.value.trim();
+  const question = retryQuestion || input.value.trim();
   if (!question) return;
 
-  addMessage(question, 'user');
-  input.value = '';
+  if (!retryQuestion) {
+    addMessage(question, 'user');
+    input.value = '';
+  }
+  lastQuestion = question;
   activeHistoryId = null;
   clearActiveHistory();
 
   const btn = document.getElementById('sendButton');
-  const originalText = btn.innerHTML;
   btn.innerHTML = '<span class="loading"></span>';
   btn.disabled = true;
+  input.disabled = true;
+
+  // Show typing indicator
+  const typingId = addTypingIndicator();
 
   try {
     const headers = { 'Content-Type': 'application/json' };
@@ -36,11 +43,13 @@ async function sendQuestion() {
       body: JSON.stringify({ question })
     });
 
+    removeTypingIndicator(typingId);
     const data = await response.json();
 
-    if (response.ok) {
+    if (response.status === 429) {
+      addErrorMessage('You\'re asking too fast! Please wait a moment before trying again.');
+    } else if (response.ok) {
       addMessage(data.answer, 'bot');
-      // Live-add to sidebar if a conversation was saved (user is logged in)
       if (data.conversation_id) {
         prependHistoryItem({
           id: data.conversation_id,
@@ -51,14 +60,16 @@ async function sendQuestion() {
         showSidebarFooter();
       }
     } else {
-      addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+      addErrorMessage(data.error || 'Something went wrong. Please try again.', true);
     }
-  } catch (error) {
-    console.error('Error:', error);
-    addMessage('Sorry, I cannot connect to the server. Please make sure the backend is running.', 'bot');
+  } catch {
+    removeTypingIndicator(typingId);
+    addErrorMessage('Cannot reach the server. Check your connection and try again.', true);
   } finally {
-    btn.innerHTML = originalText;
+    btn.innerHTML = 'Send';
     btn.disabled = false;
+    input.disabled = false;
+    input.focus();
   }
 }
 
@@ -69,6 +80,51 @@ function addMessage(content, sender) {
   const contentDiv = document.createElement('div');
   contentDiv.className = 'message-content';
   contentDiv.textContent = content;
+  msgDiv.appendChild(contentDiv);
+  chatContainer.appendChild(msgDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
+
+function addTypingIndicator() {
+  const chatContainer = document.getElementById('chatContainer');
+  const id = 'typing-' + Date.now();
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'message bot-message typing-indicator';
+  msgDiv.id = id;
+  msgDiv.innerHTML = `
+    <div class="message-content">
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>`;
+  chatContainer.appendChild(msgDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+  return id;
+}
+
+function removeTypingIndicator(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function addErrorMessage(text, showRetry = false) {
+  const chatContainer = document.getElementById('chatContainer');
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'message bot-message error-message';
+  const contentDiv = document.createElement('div');
+  contentDiv.className = 'message-content';
+  contentDiv.textContent = text;
+  if (showRetry) {
+    const btn = document.createElement('button');
+    btn.className = 'retry-btn';
+    btn.textContent = '↺ Retry';
+    btn.onclick = () => {
+      msgDiv.remove();
+      sendQuestion(lastQuestion);
+    };
+    contentDiv.appendChild(document.createElement('br'));
+    contentDiv.appendChild(btn);
+  }
   msgDiv.appendChild(contentDiv);
   chatContainer.appendChild(msgDiv);
   chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -85,6 +141,7 @@ function handleKeyPress(event) {
 async function loadHistory() {
   const token = getToken();
   const listEl = document.getElementById('historyList');
+  if (!listEl) return;
 
   if (!token) {
     listEl.innerHTML = `
@@ -109,37 +166,29 @@ async function loadHistory() {
 
 function renderHistoryList(items) {
   const listEl = document.getElementById('historyList');
+  if (!items.length) { renderEmptyHistory(); return; }
 
-  if (!items.length) {
-    renderEmptyHistory();
-    return;
-  }
-
-  // Group by date
   const groups = groupByDate(items);
   let html = '';
-
   for (const [label, group] of Object.entries(groups)) {
     if (!group.length) continue;
     html += `<div class="history-group-label">${label}</div>`;
-    for (const item of group) {
-      html += buildHistoryItemHTML(item);
-    }
+    for (const item of group) html += buildHistoryItemHTML(item);
   }
-
   listEl.innerHTML = html;
   showSidebarFooter();
 }
 
 function buildHistoryItemHTML(item) {
   const preview = item.question.length > 52
-    ? item.question.slice(0, 52) + '…'
-    : item.question;
+    ? item.question.slice(0, 52) + '…' : item.question;
   const time = formatTime(item.created_at);
   const activeClass = item.id === activeHistoryId ? ' active' : '';
+  const safeQ = JSON.stringify(item.question);
+  const safeA = JSON.stringify(item.answer);
   return `
     <div class="history-item${activeClass}" id="hi-${item.id}"
-         onclick="loadConversation(${item.id}, ${JSON.stringify(item.question).replace(/</g,'&lt;')}, ${JSON.stringify(item.answer).replace(/</g,'&lt;')})">
+         onclick="loadConversation(${item.id}, ${safeQ}, ${safeA})">
       <div class="history-item-question">${escapeHtml(preview)}</div>
       <div class="history-item-date">${time}</div>
       <button class="history-item-delete" title="Delete"
@@ -149,12 +198,10 @@ function buildHistoryItemHTML(item) {
 
 function prependHistoryItem(item) {
   const listEl = document.getElementById('historyList');
-
-  // Remove guest prompt or empty state if present
+  if (!listEl) return;
   const guest = listEl.querySelector('.sidebar-guest, .sidebar-empty');
   if (guest) guest.remove();
 
-  // Check if a "Today" group label already exists
   let todayLabel = listEl.querySelector('.history-group-label');
   if (!todayLabel || todayLabel.textContent !== 'Today') {
     const label = document.createElement('div');
@@ -163,15 +210,14 @@ function prependHistoryItem(item) {
     listEl.insertBefore(label, listEl.firstChild);
     todayLabel = label;
   }
-
-  // Insert new item right after the Today label
   const div = document.createElement('div');
   div.innerHTML = buildHistoryItemHTML(item);
   todayLabel.insertAdjacentElement('afterend', div.firstElementChild);
 }
 
 function renderEmptyHistory() {
-  document.getElementById('historyList').innerHTML = `
+  const listEl = document.getElementById('historyList');
+  if (listEl) listEl.innerHTML = `
     <div class="sidebar-empty">
       <div class="sidebar-empty-icon">📜</div>
       No conversations yet.<br/>Start asking to build your history.
@@ -179,13 +225,11 @@ function renderEmptyHistory() {
 }
 
 function loadConversation(id, question, answer) {
-  // Set active state on sidebar item
   clearActiveHistory();
   activeHistoryId = id;
   const item = document.getElementById(`hi-${id}`);
   if (item) item.classList.add('active');
 
-  // Restore that Q&A in the chat area
   const chatContainer = document.getElementById('chatContainer');
   chatContainer.innerHTML = `
     <div class="message bot-message">
@@ -206,6 +250,7 @@ function loadConversation(id, question, answer) {
 function newChat() {
   clearActiveHistory();
   activeHistoryId = null;
+  lastQuestion = '';
   document.getElementById('chatContainer').innerHTML = `
     <div class="message bot-message">
       <div class="message-content">
@@ -213,35 +258,30 @@ function newChat() {
         karma, devotion, or life wisdom.
       </div>
     </div>`;
-  document.getElementById('questionInput').focus();
+  const input = document.getElementById('questionInput');
+  if (input) input.focus();
 }
 
 async function deleteHistoryItem(id) {
   const token = getToken();
   if (!token) return;
-
   try {
     const res = await fetch(`${API_URL}/history/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
     if (res.ok) {
-      const el = document.getElementById(`hi-${id}`);
-      if (el) el.remove();
+      document.getElementById(`hi-${id}`)?.remove();
       if (activeHistoryId === id) newChat();
-      // Remove orphaned group labels
       removeEmptyGroups();
     }
-  } catch (e) {
-    console.error('Delete failed', e);
-  }
+  } catch (e) { console.error('Delete failed', e); }
 }
 
 async function clearAllHistory() {
   if (!confirm('Clear all conversation history? This cannot be undone.')) return;
   const token = getToken();
   if (!token) return;
-
   try {
     const res = await fetch(`${API_URL}/history/clear`, {
       method: 'DELETE',
@@ -249,12 +289,11 @@ async function clearAllHistory() {
     });
     if (res.ok) {
       renderEmptyHistory();
-      document.getElementById('sidebarFooter').style.display = 'none';
+      const footer = document.getElementById('sidebarFooter');
+      if (footer) footer.style.display = 'none';
       newChat();
     }
-  } catch (e) {
-    console.error('Clear failed', e);
-  }
+  } catch (e) { console.error('Clear failed', e); }
 }
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -263,16 +302,14 @@ async function clearAllHistory() {
 
 function groupByDate(items) {
   const now = new Date();
-  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const yesterdayStart = new Date(todayStart);
-  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
-  const weekStart = new Date(todayStart);
-  weekStart.setDate(weekStart.getDate() - 7);
+  const todayStart     = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterdayStart = new Date(todayStart); yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  const weekStart      = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7);
 
   const groups = { 'Today': [], 'Yesterday': [], 'This Week': [], 'Earlier': [] };
   for (const item of items) {
     const d = new Date(item.created_at);
-    if (d >= todayStart)          groups['Today'].push(item);
+    if      (d >= todayStart)     groups['Today'].push(item);
     else if (d >= yesterdayStart) groups['Yesterday'].push(item);
     else if (d >= weekStart)      groups['This Week'].push(item);
     else                          groups['Earlier'].push(item);
@@ -284,18 +321,15 @@ function formatTime(isoString) {
   const d = new Date(isoString);
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  if (d >= todayStart) {
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  return d >= todayStart
+    ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : d.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
 function escapeHtml(str) {
   return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function clearActiveHistory() {
@@ -304,17 +338,15 @@ function clearActiveHistory() {
 
 function removeEmptyGroups() {
   const listEl = document.getElementById('historyList');
-  const labels = listEl.querySelectorAll('.history-group-label');
-  labels.forEach(label => {
+  if (!listEl) return;
+  listEl.querySelectorAll('.history-group-label').forEach(label => {
     const next = label.nextElementSibling;
-    if (!next || next.classList.contains('history-group-label')) {
-      label.remove();
-    }
+    if (!next || next.classList.contains('history-group-label')) label.remove();
   });
-  // If list is empty now, show empty state
   if (!listEl.querySelector('.history-item')) {
     renderEmptyHistory();
-    document.getElementById('sidebarFooter').style.display = 'none';
+    const footer = document.getElementById('sidebarFooter');
+    if (footer) footer.style.display = 'none';
   }
 }
 
@@ -323,14 +355,14 @@ function showSidebarFooter() {
   if (footer) footer.style.display = 'block';
 }
 
-// ── Health check on load ──────────────────────────────────────────────────────
+// ── Health check ──────────────────────────────────────────────────────────────
 async function checkHealth() {
   try {
     const res = await fetch(`${API_URL}/health`);
     const data = await res.json();
-    console.log('Backend status:', data.message);
+    console.log('Backend:', data.message);
   } catch {
-    addMessage('Warning: Cannot connect to the backend server.', 'bot');
+    addErrorMessage('⚠️ Cannot connect to the backend. The server may be starting up — please wait a moment and try again.');
   }
 }
 

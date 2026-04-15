@@ -220,6 +220,43 @@ body {
   animation: fadeUp 1s 0.3s ease both;
 }
 
+/* Verse of the Day Card */
+.verse-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  margin: 0 auto 40px;
+  max-width: 600px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+  animation: fadeUp 1s 0.35s ease both;
+}
+
+.verse-label {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.verse-text {
+  font-size: 15px;
+  color: #fff;
+  line-height: 1.6;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.verse-ref {
+  font-size: 13px;
+  color: var(--gold-light);
+  font-weight: 500;
+}
+
 .hero-ctas {
   display: flex;
   gap: 16px;

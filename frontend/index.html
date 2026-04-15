@@ -18,6 +18,12 @@
     />
 
     <link rel="stylesheet" href="landing.css" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#1B2A4E" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Gita Wisdom" />
+    <link rel="apple-touch-icon" href="images/icon-192.png" />
     <script src="auth.js" defer></script>
   </head>
 
@@ -64,6 +70,13 @@
           Receive guidance directly from the Bhagavad Gita —
           grounded in scripture, with chapter and verse references.
         </p>
+
+        <!-- Verse of the Day Container -->
+        <div id="verse-of-day-container" class="verse-card" style="display: none;">
+          <div class="verse-label">Verse of the Day</div>
+          <p id="vod-text" class="verse-text"></p>
+          <div id="vod-ref" class="verse-ref"></div>
+        </div>
 
         <div class="hero-ctas">
           <a href="chat.html" class="btn-hero-primary">
@@ -404,6 +417,23 @@
         });
       }, { threshold: 0.2 });
       steps.forEach(s => observer.observe(s));
+
+      // --- Verse of the Day ---
+      async function fetchVod() {
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:5000/api'
+          : 'https://hibque-bhagwatgita-bot.hf.space/api';
+        try {
+          const res = await fetch(`${API_URL}/verse-of-day`);
+          if (res.ok) {
+            const data = await res.json();
+            document.getElementById('vod-text').textContent = `"${data.text}"`;
+            document.getElementById('vod-ref').textContent = `— Chapter ${data.chapter}, Verse ${data.verse}`;
+            document.getElementById('verse-of-day-container').style.display = 'block';
+          }
+        } catch (e) { console.error('VOD fetch failed', e); }
+      }
+      fetchVod();
     </script>
 
   </body>

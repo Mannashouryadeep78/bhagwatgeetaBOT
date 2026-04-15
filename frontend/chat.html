@@ -400,10 +400,10 @@
           const initial = user.name.charAt(0).toUpperCase();
           const firstName = user.name.split(' ')[0];
           el.innerHTML = `
-            <div class="user-chip">
+            <a href="profile.html" class="user-chip" style="text-decoration: none;">
               <div class="user-chip-avatar">${initial}</div>
               ${firstName}
-            </div>
+            </a>
             <button class="btn-logout" onclick="logout()">Logout</button>
           `;
         } else {
