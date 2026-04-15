@@ -1,6 +1,6 @@
 import os
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import PyPDFLoader
 from dotenv import load_dotenv
@@ -9,7 +9,7 @@ load_dotenv()
 
 # Paths relative to this file
 BASE_DIR = os.path.dirname(__file__)
-PDF_PATH = os.path.join(BASE_DIR, "..", "data", "bhagavad_gita.pdf")
+PDF_PATH = os.path.join(BASE_DIR, "data", "bhagavad_gita.pdf")
 FAISS_INDEX_PATH = os.path.join(BASE_DIR, "faiss_index")
 
 

@@ -4,7 +4,7 @@ backend/venv/
 *.pyo
 *.pyd
 backend/.env
-data/
+backend/faiss_index/
 frontend/
 frontend/node_modules/
 .git/

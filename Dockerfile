@@ -2,12 +2,18 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install dependencies first (cached layer)
+# Install dependencies
 COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend source (app.py, rag_chain.py, ingest.py, faiss_index/)
+# Copy backend source
 COPY backend/ .
+
+# Copy PDF for index building
+COPY data/ /app/data/
+
+# Build FAISS index inside the container — same env, no version mismatch
+RUN python ingest.py
 
 # HuggingFace Spaces requires port 7860
 EXPOSE 7860
