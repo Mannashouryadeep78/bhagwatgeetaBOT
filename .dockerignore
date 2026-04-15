@@ -1,0 +1,14 @@
+backend/venv/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+backend/.env
+data/
+frontend/
+frontend/node_modules/
+.git/
+.gitignore
+.vercel/
+.vscode/
+*.log

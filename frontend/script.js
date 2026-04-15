@@ -1,7 +1,7 @@
-// Auto-switch API URL: local dev vs production (Render backend)
+// Auto-switch API URL: local dev vs production (HuggingFace Spaces backend)
 const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:5000/api'
-  : 'https://bhagwatgita-bot.onrender.com/api';
+  : 'https://hibque-bhagwatgita-bot.hf.space/api';
 
 async function sendQuestion() {
   const questionInput = document.getElementById("questionInput");
