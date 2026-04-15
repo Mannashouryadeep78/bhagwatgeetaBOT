@@ -1,0 +1,6 @@
+.venv/
+venv/
+__pycache__/
+frontend/node_modules/
+*.pyc
+.git/

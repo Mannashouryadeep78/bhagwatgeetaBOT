@@ -1,31 +1,33 @@
 # --- Python Environment ---
-# Ignore the virtual environment folder (it's huge and recreatable)
 backend/venv/
-# Ignore compiled Python files
 **/__pycache__/
 *.pyc
 *.pyo
 *.pyd
 
 # --- Security & Secrets ---
-# NEVER push your API keys to GitHub
+# NEVER push API keys to GitHub
 backend/.env
+.env
 
-# --- Data & Vector Store ---
-# Ignore the raw PDF data if it's large or copyrighted
+# --- Data ---
+# Raw PDF (large / copyright)
 data/*.pdf
 
-# FAISS Index: Choose one of the options below
-# Option A: Ignore it and run ingest.py on the server (Recommended)
-backend/faiss_index/
-
-# Option B: Comment out the line above if you want to push the index
-# to GitHub (only do this if the index folder is small)
+# --- Node ---
+frontend/node_modules/
+node_modules/
 
 # --- OS Specific ---
 .DS_Store
 Thumbs.db
 
-# --- Logs & Performance ---
+# --- Logs ---
 *.log
+
+# --- IDE ---
 .vscode/
+.idea/
+
+# --- Vercel ---
+.vercel

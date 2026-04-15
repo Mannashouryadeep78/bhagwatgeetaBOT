@@ -1,4 +1,7 @@
-const API_URL = "http://localhost:5000/api";
+// Auto-switch API URL: local dev vs production (Render backend)
+const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:5000/api'
+  : 'https://bhagwatgita-bot.onrender.com/api';
 
 async function sendQuestion() {
   const questionInput = document.getElementById("questionInput");
@@ -6,18 +9,15 @@ async function sendQuestion() {
 
   if (!question) return;
 
-  // Add user message to chat
   addMessage(question, "user");
   questionInput.value = "";
 
-  // Show loading indicator
   const sendButton = document.getElementById("sendButton");
   const originalText = sendButton.innerHTML;
   sendButton.innerHTML = '<span class="loading"></span>';
   sendButton.disabled = true;
 
   try {
-    // Send request to backend
     const response = await fetch(`${API_URL}/chat`, {
       method: "POST",
       headers: {
@@ -29,7 +29,6 @@ async function sendQuestion() {
     const data = await response.json();
 
     if (response.ok) {
-      // Add bot response to chat
       addMessage(data.answer, "bot");
     } else {
       addMessage("Sorry, I encountered an error. Please try again.", "bot");
@@ -41,7 +40,6 @@ async function sendQuestion() {
       "bot",
     );
   } finally {
-    // Restore button
     sendButton.innerHTML = originalText;
     sendButton.disabled = false;
   }
@@ -59,7 +57,6 @@ function addMessage(content, sender) {
   messageDiv.appendChild(contentDiv);
   chatContainer.appendChild(messageDiv);
 
-  // Scroll to bottom
   chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
@@ -69,7 +66,6 @@ function handleKeyPress(event) {
   }
 }
 
-// Check backend health on load
 async function checkHealth() {
   try {
     const response = await fetch(`${API_URL}/health`);
@@ -78,11 +74,10 @@ async function checkHealth() {
   } catch (error) {
     console.error("Backend not available:", error);
     addMessage(
-      "⚠️ Warning: Cannot connect to the backend server. Please make sure it is running.",
+      "Warning: Cannot connect to the backend server. Please make sure it is running.",
       "bot",
     );
   }
 }
 
-// Initialize
 window.onload = checkHealth;
