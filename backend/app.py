@@ -5,7 +5,7 @@ from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from models import db, Conversation
+# from models import db, Conversation (Migrated to Supabase)
 from auth import auth_bp
 from history import history_bp
 from rag_chain import BhagavadGitaRAG
@@ -13,11 +13,6 @@ from rag_chain import BhagavadGitaRAG
 
 app = Flask(__name__)
 CORS(app)
-
-# ── Database ──────────────────────────────────────────────────────────────────
-DB_PATH = os.path.join(os.path.dirname(__file__), 'gita.db')
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # ── JWT ───────────────────────────────────────────────────────────────────────
 app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-change-in-production')
@@ -29,15 +24,14 @@ limiter = Limiter(
     app=app,
     default_limits=["300 per hour"],
     storage_uri="memory://",
-    # Return JSON on limit exceeded instead of HTML
     on_breach=lambda limit: (jsonify({
         'error': f'Too many requests. Limit: {limit.limit}. Please slow down.'
     }), 429)
 )
 
 # ── Init extensions ───────────────────────────────────────────────────────────
-db.init_app(app)
 jwt = JWTManager(app)
+from supabase_client import supabase
 
 # ── Blueprints ────────────────────────────────────────────────────────────────
 app.register_blueprint(auth_bp)
@@ -45,10 +39,6 @@ app.register_blueprint(history_bp)
 
 # Apply stricter limits to auth routes
 limiter.limit("5 per minute")(auth_bp)
-
-# ── Create DB tables on first run ─────────────────────────────────────────────
-with app.app_context():
-    db.create_all()
 
 # ── RAG system ────────────────────────────────────────────────────────────────
 print("Initializing Bhagavad Gita RAG system...")
@@ -77,13 +67,11 @@ VERSES = [
     {"chapter": 18, "verse": 66, "text": "Abandon all varieties of religion and just surrender unto Me. I shall deliver you from all sinful reactions. Do not fear.", "theme": "Surrender"},
 ]
 
-
 @app.route('/api/verse-of-day', methods=['GET'])
 def verse_of_day():
     day_index = date.today().timetuple().tm_yday  # 1–365
     verse = VERSES[(day_index - 1) % len(VERSES)]
     return jsonify(verse)
-
 
 @app.route('/api/chat', methods=['POST'])
 @limiter.limit("12 per minute")
@@ -102,11 +90,14 @@ def chat():
         # Save to history if user is logged in
         user_id = get_jwt_identity()
         conv_id = None
-        if user_id:
-            conv = Conversation(user_id=int(user_id), question=question, answer=answer)
-            db.session.add(conv)
-            db.session.commit()
-            conv_id = conv.id
+        if user_id and supabase:
+            res = supabase.table('conversations').insert({
+                'user_id': user_id,
+                'question': question,
+                'answer': answer
+            }).execute()
+            if res.data:
+                conv_id = res.data[0]['id']
 
         return jsonify({
             'answer': answer,

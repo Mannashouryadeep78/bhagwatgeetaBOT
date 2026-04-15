@@ -1,4 +1,16 @@
-// ── API URL (auto-switch local vs production) ─────────────────────────────────
+// ── Supabase Configuration ────────────────────────────────────────────────────
+// FILL THESE IN to connect directly to Supabase from the frontend
+const SUPABASE_URL = "https://izqcpfznbjeeyklhzjsq.supabase.co"; 
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6cWNwZnpuYmplZXlrbGh6anNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzUwMjEsImV4cCI6MjA5MTg1MTAyMX0.CtxsY2FeiBu5NgcX5CQVqP_05m-40SELpCSXY1gpdF4";
+
+let supabase = null;
+if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
+  // Rename global supabase to prevent conflict if needed, or just use it
+  const { createClient } = supabase;
+  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// ── API URL (fallback for Python-based RAG chat) ───────────────────────────────
 const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
   ? 'http://localhost:5000/api'
   : 'https://hibque-bhagwatgita-bot.hf.space/api';
@@ -15,7 +27,8 @@ function removeUser()     { localStorage.removeItem('gita_user'); }
 function isLoggedIn()     { return !!getToken(); }
 
 // ── Auth actions ──────────────────────────────────────────────────────────────
-function logout() {
+async function logout() {
+  if (supabase) await supabase.auth.signOut();
   removeToken();
   removeUser();
   window.location.href = 'index.html';
@@ -23,44 +36,76 @@ function logout() {
 
 // ── API calls ─────────────────────────────────────────────────────────────────
 async function apiRegister(name, email, password) {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Registration failed.');
-  setToken(data.token);
-  setUser(data.user);
-  return data;
+  if (supabase) {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } }
+    });
+    if (error) throw error;
+    setToken(data.session?.access_token);
+    const user = { id: data.user.id, name: data.user.user_metadata.name, email: data.user.email };
+    setUser(user);
+    return { token: data.session?.access_token, user };
+  } else {
+    // Fallback to proxy
+    const res = await fetch(`${API_BASE}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Registration failed.');
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  }
 }
 
 async function apiLogin(email, password) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Login failed.');
-  setToken(data.token);
-  setUser(data.user);
-  return data;
+  if (supabase) {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    setToken(data.session.access_token);
+    const user = { id: data.user.id, name: data.user.user_metadata.name, email: data.user.email };
+    setUser(user);
+    return { token: data.session.access_token, user };
+  } else {
+    // Fallback to proxy
+    const res = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed.');
+    setToken(data.token);
+    setUser(data.user);
+    return data;
+  }
 }
 
 async function apiMe() {
-  const token = getToken();
-  if (!token) return null;
-  try {
-    const res = await fetch(`${API_BASE}/auth/me`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    if (!res.ok) { removeToken(); removeUser(); return null; }
-    const data = await res.json();
-    setUser(data.user);
-    return data.user;
-  } catch {
-    return null;
+  if (supabase) {
+     const { data: { user } } = await supabase.auth.getUser();
+     if (user) {
+        const u = { id: user.id, name: user.user_metadata.name, email: user.email };
+        setUser(u);
+        return u;
+     }
+     return null;
+  } else {
+    const token = getToken();
+    if (!token) return null;
+    try {
+      const res = await fetch(`${API_BASE}/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) { removeToken(); removeUser(); return null; }
+      const data = await res.json();
+      setUser(data.user);
+      return data.user;
+    } catch { return null; }
   }
 }
 
