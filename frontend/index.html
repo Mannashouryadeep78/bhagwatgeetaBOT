@@ -3,47 +3,408 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bhagavad Gita Wisdom</title>
+    <title>Bhagavad Gita Wisdom — Timeless Guidance for Modern Life</title>
+    <meta name="description" content="Ask any question about life, duty, karma, or purpose and receive wisdom directly from the Bhagavad Gita — with chapter and verse references." />
 
-    <!-- Google Fonts -->
+    <!-- Open Graph -->
+    <meta property="og:title" content="Bhagavad Gita Wisdom" />
+    <meta property="og:description" content="Timeless guidance for modern life. Ask questions, get Gita-backed answers." />
+    <meta property="og:type" content="website" />
+
+    <!-- Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Poppins:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Poppins:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="landing.css" />
+    <script src="auth.js" defer></script>
   </head>
 
   <body>
-    <!-- Krishna Background Overlay -->
-    <div class="krishna-bg"></div>
 
-    <div class="container">
-      <div class="header">
-        <h1>🪷 Bhagavad Gita Wisdom</h1>
-        <p>Timeless guidance for modern life</p>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar" id="navbar">
+      <a class="nav-logo" href="index.html">
+        <span>🪷</span> Gita Wisdom
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how-it-works">How it Works</a></li>
+        <li><a href="#demo">Live Demo</a></li>
+      </ul>
+
+      <div class="nav-actions" id="navActions">
+        <a href="login.html" class="btn-ghost">Login</a>
+        <a href="register.html" class="btn-gold">Get Started</a>
       </div>
 
-      <div class="chat-container" id="chatContainer">
-        <div class="message bot-message">
-          <div class="message-content">
-            🙏 Namaste! I am your guide to the Bhagavad Gita. Ask me about duty,
-            karma, devotion, or life wisdom.
-          </div>
+      <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+
+
+    <!-- ===== HERO ===== -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+        <span class="hero-badge">&#9834; Ancient Wisdom · Modern Answers</span>
+
+        <h1 class="hero-title">
+          Discover<br/>
+          <span class="gold">Timeless Wisdom</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Ask any question about life, duty, karma, or purpose.
+          Receive guidance directly from the Bhagavad Gita —
+          grounded in scripture, with chapter and verse references.
+        </p>
+
+        <div class="hero-ctas">
+          <a href="chat.html" class="btn-hero-primary">
+            Start Chatting &nbsp;&#8594;
+          </a>
+          <a href="#features" class="btn-hero-secondary">
+            Learn More &nbsp;&#8595;
+          </a>
         </div>
       </div>
 
-      <div class="input-container">
-        <input
-          type="text"
-          id="questionInput"
-          placeholder="Ask Krishna your question…"
-          onkeypress="handleKeyPress(event)"
-        />
-        <button onclick="sendQuestion()" id="sendButton">Send</button>
+      <div class="hero-scroll-hint">
+        <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+        </svg>
+        <span>Scroll</span>
       </div>
-    </div>
+    </section>
 
-    <script src="script.js"></script>
+
+    <!-- ===== FEATURES ===== -->
+    <section id="features">
+      <span class="section-label">Why Gita Wisdom</span>
+      <h2 class="section-title">Scripture Meets Intelligence</h2>
+      <p class="section-sub">
+        Not a generic chatbot — every answer is grounded in the Bhagavad Gita's teachings,
+        retrieved from the original text and cited by chapter and verse.
+      </p>
+
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <span class="feature-icon">📜</span>
+          <h3>Rooted in Scripture</h3>
+          <p>
+            Answers are retrieved directly from the Bhagavad Gita's text using
+            semantic search — not hallucinated, not paraphrased beyond recognition.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🔖</span>
+          <h3>Chapter &amp; Verse Citations</h3>
+          <p>
+            Every response includes the relevant chapter and verse so you can
+            trace the wisdom back to its source and study further.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🌿</span>
+          <h3>Life-Relevant Guidance</h3>
+          <p>
+            Ask about grief, purpose, relationships, ambition, or fear.
+            Krishna's teachings apply to modern dilemmas just as they did millennia ago.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <h3>Instant Answers</h3>
+          <p>
+            Powered by Groq's ultra-fast LLM inference — answers in seconds,
+            not minutes. Wisdom should never make you wait.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🎯</span>
+          <h3>No Noise, Pure Signal</h3>
+          <p>
+            No long-winded preambles or filler text. Direct, meaningful answers
+            that respect your time and your question.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <span class="feature-icon">🔓</span>
+          <h3>Free to Use</h3>
+          <p>
+            Always free. No paywalls on ancient wisdom.
+            Start asking immediately — no credit card required.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <section id="how-it-works">
+      <span class="section-label">The Process</span>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-sub">
+        A modern RAG (Retrieval-Augmented Generation) pipeline ensures answers
+        are always grounded in the actual text of the Gita.
+      </p>
+
+      <div class="steps-container">
+
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-body">
+            <h3>Ask Your Question</h3>
+            <p>
+              Type any question about life, purpose, duty, karma, devotion, or any other
+              spiritual or philosophical topic. There are no wrong questions.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-body">
+            <h3>AI Searches the Gita</h3>
+            <p>
+              A semantic search engine scans all 18 chapters and 700 verses to find
+              the passages most relevant to your question — using meaning, not just keywords.
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-body">
+            <h3>Receive Wisdom with Context</h3>
+            <p>
+              A large language model synthesizes the retrieved passages into a clear,
+              concise answer — with chapter and verse references you can follow up on.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ===== LIVE DEMO ===== -->
+    <section id="demo">
+      <span class="section-label">See It In Action</span>
+      <h2 class="section-title">Real Questions, Real Wisdom</h2>
+      <p class="section-sub">
+        Here are a few examples of what you can ask. Click each tab to explore.
+      </p>
+
+      <div class="demo-container">
+
+        <div class="demo-header">
+          🪷 &nbsp;Bhagavad Gita Wisdom
+        </div>
+
+        <div class="demo-tabs">
+          <button class="demo-tab active" onclick="showTab(0)">On Purpose</button>
+          <button class="demo-tab" onclick="showTab(1)">On Grief</button>
+          <button class="demo-tab" onclick="showTab(2)">On Action</button>
+        </div>
+
+        <div class="demo-chat">
+
+          <!-- Tab 0: Purpose -->
+          <div class="demo-pane active" id="pane-0">
+            <div class="demo-msg user">
+              <div class="demo-avatar user-av">🙋</div>
+              <div class="demo-bubble user-bubble">
+                How do I find my true purpose in life?
+              </div>
+            </div>
+            <div class="demo-msg">
+              <div class="demo-avatar bot-av">🪷</div>
+              <div class="demo-bubble bot-bubble">
+                Your true purpose — your <em>svadharma</em> — lies in your unique nature, not in imitation of others.
+                Krishna teaches that it is better to perform one's own duty imperfectly than to perform another's duty perfectly.
+                Look inward: your dharma is revealed through your innate qualities, your natural inclinations, and the duties that life has placed before you.
+                <br/><br/>
+                <span class="demo-verse">📖 Chapter 3, Verse 35</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 1: Grief -->
+          <div class="demo-pane" id="pane-1">
+            <div class="demo-msg user">
+              <div class="demo-avatar user-av">🙋</div>
+              <div class="demo-bubble user-bubble">
+                How should I deal with the grief of losing someone I love?
+              </div>
+            </div>
+            <div class="demo-msg">
+              <div class="demo-avatar bot-av">🪷</div>
+              <div class="demo-bubble bot-bubble">
+                The Gita teaches that the soul is eternal — it is never born and never dies.
+                What we grieve is the body, the form; but the essence of the one you loved
+                was never truly lost. This is not a call to suppress emotion, but to
+                understand the deeper reality behind it. Grief itself is natural; clinging
+                to the impermanent is the source of suffering.
+                <br/><br/>
+                <span class="demo-verse">📖 Chapter 2, Verse 20</span>
+                &nbsp;
+                <span class="demo-verse">📖 Chapter 2, Verse 27</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Action -->
+          <div class="demo-pane" id="pane-2">
+            <div class="demo-msg user">
+              <div class="demo-avatar user-av">🙋</div>
+              <div class="demo-bubble user-bubble">
+                I keep worrying about the results of my efforts. How do I stop?
+              </div>
+            </div>
+            <div class="demo-msg">
+              <div class="demo-avatar bot-av">🪷</div>
+              <div class="demo-bubble bot-bubble">
+                This is the heart of Karma Yoga. Krishna says: <em>"You have the right to perform
+                your actions, but you are not entitled to the fruits of your actions."</em>
+                Act with full effort and sincerity — then release attachment to the outcome.
+                The quality of your action is entirely within your control; the result is not.
+                Anxiety arises precisely when we confuse these two.
+                <br/><br/>
+                <span class="demo-verse">📖 Chapter 2, Verse 47</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== CTA BANNER ===== -->
+    <section class="cta-section">
+      <h2>Begin Your Journey Today</h2>
+      <p>Ancient wisdom. Instant access. Completely free.</p>
+      <a href="chat.html" class="btn-hero-primary">
+        Ask Krishna &nbsp;&#8594;
+      </a>
+    </section>
+
+
+    <!-- ===== FOOTER ===== -->
+    <footer>
+      <div class="footer-top">
+
+        <div class="footer-brand">
+          <a class="nav-logo" href="index.html" style="display:inline-flex; margin-bottom:12px;">
+            <span>🪷</span> Gita Wisdom
+          </a>
+          <p>
+            Timeless guidance from the Bhagavad Gita,
+            made accessible through modern AI.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Navigate</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How it Works</a></li>
+            <li><a href="#demo">Live Demo</a></li>
+            <li><a href="chat.html">Open Chat</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Account</h4>
+          <ul>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="login.html">Login</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Tech Stack</h4>
+          <ul>
+            <li><a href="#">LangChain + FAISS</a></li>
+            <li><a href="#">Groq LLM</a></li>
+            <li><a href="#">Flask + Gunicorn</a></li>
+            <li><a href="#">HuggingFace Spaces</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2025 Bhagavad Gita Wisdom. Built with devotion.</p>
+        <p>
+          <a href="https://huggingface.co/spaces/Hibque/bhagwatgita-bot" target="_blank" rel="noopener">
+            Backend on HuggingFace Spaces
+          </a>
+        </p>
+      </div>
+    </footer>
+
+
+    <!-- ===== SCRIPTS ===== -->
+    <script>
+      // --- Auth nav ---
+      applyAuthToNav();
+
+      // --- Navbar scroll effect ---
+      const navbar = document.getElementById('navbar');
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+      });
+
+      // --- Mobile menu toggle ---
+      function toggleMenu() {
+        document.getElementById('navLinks').classList.toggle('open');
+        document.getElementById('navActions').classList.toggle('open');
+      }
+
+      // Close mobile menu on link click
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', () => {
+          document.getElementById('navLinks').classList.remove('open');
+          document.getElementById('navActions').classList.remove('open');
+        });
+      });
+
+      // --- Demo tabs ---
+      const tabs = document.querySelectorAll('.demo-tab');
+      function showTab(index) {
+        tabs.forEach((t, i) => t.classList.toggle('active', i === index));
+        document.querySelectorAll('.demo-pane').forEach((p, i) => {
+          p.classList.toggle('active', i === index);
+        });
+      }
+
+      // --- Scroll reveal for steps ---
+      const steps = document.querySelectorAll('.step');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            observer.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.2 });
+      steps.forEach(s => observer.observe(s));
+    </script>
+
   </body>
 </html>

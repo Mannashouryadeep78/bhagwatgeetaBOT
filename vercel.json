@@ -1,6 +1,9 @@
 {
   "outputDirectory": "frontend",
   "routes": [
+    { "src": "/chat", "dest": "/chat.html" },
+    { "src": "/login", "dest": "/login.html" },
+    { "src": "/register", "dest": "/register.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ]
 }
