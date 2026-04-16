@@ -3,11 +3,9 @@
 const SUPABASE_URL = "https://izqcpfznbjeeyklhzjsq.supabase.co"; 
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6cWNwZnpuYmplZXlrbGh6anNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYyNzUwMjEsImV4cCI6MjA5MTg1MTAyMX0.CtxsY2FeiBu5NgcX5CQVqP_05m-40SELpCSXY1gpdF4";
 
-let supabase = null;
-if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
-  // Rename global supabase to prevent conflict if needed, or just use it
-  const { createClient } = supabase;
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let gitaSupabase = null;
+if (typeof window.supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
+  gitaSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 }
 
 // ── API URL (fallback for Python-based RAG chat) ───────────────────────────────
@@ -28,7 +26,7 @@ function isLoggedIn()     { return !!getToken(); }
 
 // ── Auth actions ──────────────────────────────────────────────────────────────
 async function logout() {
-  if (supabase) await supabase.auth.signOut();
+  if (gitaSupabase) await gitaSupabase.auth.signOut();
   removeToken();
   removeUser();
   window.location.href = 'index.html';
@@ -36,8 +34,8 @@ async function logout() {
 
 // ── API calls ─────────────────────────────────────────────────────────────────
 async function apiRegister(name, email, password) {
-  if (supabase) {
-    const { data, error } = await supabase.auth.signUp({
+  if (gitaSupabase) {
+    const { data, error } = await gitaSupabase.auth.signUp({
       email,
       password,
       options: { data: { name } }
@@ -63,8 +61,8 @@ async function apiRegister(name, email, password) {
 }
 
 async function apiLogin(email, password) {
-  if (supabase) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (gitaSupabase) {
+    const { data, error } = await gitaSupabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
     setToken(data.session.access_token);
     const user = { id: data.user.id, name: data.user.user_metadata.name, email: data.user.email };
@@ -86,8 +84,8 @@ async function apiLogin(email, password) {
 }
 
 async function apiMe() {
-  if (supabase) {
-     const { data: { user } } = await supabase.auth.getUser();
+  if (gitaSupabase) {
+     const { data: { user } } = await gitaSupabase.auth.getUser();
      if (user) {
         const u = { id: user.id, name: user.user_metadata.name, email: user.email };
         setUser(u);
