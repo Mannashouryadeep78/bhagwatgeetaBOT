@@ -14,9 +14,19 @@ const API_BASE = window.location.hostname === 'localhost' || window.location.hos
   : 'https://hibque-bhagwatgita-bot.hf.space/api';
 
 // ── Storage helpers ───────────────────────────────────────────────────────────
-function getToken()       { return localStorage.getItem('gita_token'); }
-function setToken(t)      { localStorage.setItem('gita_token', t); }
-function removeToken()    { localStorage.removeItem('gita_token'); }
+function getToken() {
+  const t = localStorage.getItem('gita_token');
+  if (!t || t === 'undefined' || t === 'null') return null;
+  return t;
+}
+function setToken(t) {
+  if (!t || t === 'undefined' || t === 'null') {
+    localStorage.removeItem('gita_token');
+  } else {
+    localStorage.setItem('gita_token', t);
+  }
+}
+function removeToken() { localStorage.removeItem('gita_token'); }
 
 function getUser()        { try { return JSON.parse(localStorage.getItem('gita_user')); } catch { return null; } }
 function setUser(u)       { localStorage.setItem('gita_user', JSON.stringify(u)); }

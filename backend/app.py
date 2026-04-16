@@ -1,22 +1,17 @@
 import os
-from datetime import timedelta, date
+from datetime import date
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-# from models import db, Conversation (Migrated to Supabase)
 from auth import auth_bp
 from history import history_bp
 from rag_chain import BhagavadGitaRAG
+from supabase_client import supabase, get_user_id_from_token
 
 
 app = Flask(__name__)
 CORS(app)
-
-# ── JWT ───────────────────────────────────────────────────────────────────────
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'dev-secret-change-in-production')
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=7)
 
 # ── Rate limiter ──────────────────────────────────────────────────────────────
 limiter = Limiter(
@@ -24,20 +19,16 @@ limiter = Limiter(
     app=app,
     default_limits=["300 per hour"],
     storage_uri="memory://",
-    on_breach=lambda limit: (jsonify({
-        'error': f'Too many requests. Limit: {limit.limit}. Please slow down.'
-    }), 429)
 )
 
-# ── Init extensions ───────────────────────────────────────────────────────────
-jwt = JWTManager(app)
-from supabase_client import supabase
+@app.errorhandler(429)
+def ratelimit_handler(_e):
+    return jsonify({'error': 'Too many requests. Please slow down.'}), 429
 
 # ── Blueprints ────────────────────────────────────────────────────────────────
 app.register_blueprint(auth_bp)
 app.register_blueprint(history_bp)
 
-# Apply stricter limits to auth routes
 limiter.limit("5 per minute")(auth_bp)
 
 # ── RAG system ────────────────────────────────────────────────────────────────
@@ -73,9 +64,9 @@ def verse_of_day():
     verse = VERSES[(day_index - 1) % len(VERSES)]
     return jsonify(verse)
 
+
 @app.route('/api/chat', methods=['POST'])
 @limiter.limit("12 per minute")
-@jwt_required(optional=True)
 def chat():
     try:
         data = request.json
@@ -87,8 +78,9 @@ def chat():
         result = rag_system.get_answer(question)
         answer = result['answer']
 
-        # Save to history if user is logged in
-        user_id = get_jwt_identity()
+        # Save to history if user is logged in (Supabase JWT verification)
+        token = request.headers.get('Authorization', '').removeprefix('Bearer ').strip()
+        user_id = get_user_id_from_token(token) if token else None
         conv_id = None
         if user_id and supabase:
             res = supabase.table('conversations').insert({

@@ -156,6 +156,15 @@ async function loadHistory() {
     const res = await fetch(`${API_URL}/history`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
+    
+    // If the server rejects the token, it's likely malformed or expired
+    if (res.status === 401 || res.status === 422) {
+      removeToken();
+      removeUser();
+      location.reload();
+      return;
+    }
+
     if (!res.ok) { renderEmptyHistory(); return; }
     const data = await res.json();
     renderHistoryList(data.history || []);
