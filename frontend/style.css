@@ -331,3 +331,31 @@ body {
   margin-top: 4px;
   padding-top: 12px;
 }
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+@media (max-width: 768px) {
+  .chat-container {
+    padding: 16px 12px;
+  }
+
+  .message-content {
+    max-width: 88%;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+
+  .input-container {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  #questionInput {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  #sendButton {
+    padding: 10px 18px;
+    font-size: 13px;
+  }
+}

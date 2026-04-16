@@ -27,11 +27,14 @@
         align-items: center;
         gap: 15px;
         padding: 8px 16px;
-        background: linear-gradient(135deg, #1B2A4E, #0D1B2A);
+        background: rgba(27, 42, 78, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
         border: 1px solid rgba(212,175,55,0.4);
         border-radius: 50px;
         z-index: 1000;
         box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        transition: all 0.3s ease;
       }
       .chat-nav-left { display: flex; align-items: center; gap: 12px; }
       .chat-nav-left a {
@@ -308,6 +311,37 @@
 
       /* ── Mobile sidebar overlay ── */
       @media (max-width: 768px) {
+        .chat-nav {
+          top: 0; right: 0; left: 0;
+          border-radius: 0;
+          border: none;
+          border-bottom: 1px solid rgba(212,175,55,0.3);
+          padding: 12px 16px;
+          background: #0D1B2A;
+          justify-content: space-between;
+        }
+        .chat-nav-title { font-size: 14px; }
+        .chat-nav-left a { font-size: 12px; }
+
+        .chat-layout {
+          padding: 0;
+          padding-top: 50px; /* navbar height */
+          height: 100%;
+        }
+
+        .chat-main {
+          height: 100%;
+          border-radius: 0;
+          border: none;
+          max-width: none;
+        }
+
+        .chat-main .header {
+          padding: 12px 20px;
+        }
+        .chat-main .header h1 { font-size: 18px; }
+        .chat-main .header p { font-size: 11px; }
+
         .btn-sidebar-toggle { display: flex; }
 
         .sidebar {
