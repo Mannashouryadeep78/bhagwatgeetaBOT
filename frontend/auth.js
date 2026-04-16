@@ -108,19 +108,46 @@ async function apiMe() {
 }
 
 // ── Update landing page navbar based on auth state ────────────────────────────
+function toggleUserDropdown(e) {
+  if (e) e.stopPropagation();
+  const menu = document.getElementById('userDropdownMenu');
+  if (menu) menu.classList.toggle('visible');
+}
+
+// Close dropdown when clicking elsewhere
+document.addEventListener('click', () => {
+  const menu = document.getElementById('userDropdownMenu');
+  if (menu) menu.classList.remove('visible');
+});
+
 function applyAuthToNav() {
   const user = getUser();
   const actionsEl = document.getElementById('navActions');
   if (!actionsEl) return;
 
   if (user) {
+    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
     actionsEl.innerHTML = `
-      <span style="color:rgba(245,230,161,0.7);font-size:13px;">
-        🙏 ${user.name.split(' ')[0]}
-      </span>
-      <a href="profile.html" class="btn-ghost">Profile</a>
-      <a href="chat.html" class="btn-gold">Open Chat</a>
-      <button class="btn-ghost" onclick="logout()" style="padding: 9px 16px;">Logout</button>
+      <div class="user-profile-nav">
+        <div class="user-avatar-circle" onclick="toggleUserDropdown(event)">
+          ${initials}
+        </div>
+        <div class="user-dropdown-menu" id="userDropdownMenu">
+          <div style="padding: 4px 16px 12px; border-bottom: 1px solid rgba(212,175,55,0.1); margin-bottom: 8px;">
+            <p style="font-size: 14px; color: #fff; font-weight: 600; margin: 0;">${user.name}</p>
+            <p style="font-size: 11px; color: rgba(245,230,161,0.5); margin: 0;">${user.email}</p>
+          </div>
+          <a href="chat.html" class="dropdown-item">
+            <span>💬</span> Chat with Wisdom Bot
+          </a>
+          <a href="profile.html" class="dropdown-item">
+            <span>👤</span> View Profile
+          </a>
+          <div class="dropdown-item logout" onclick="logout()">
+            <span>🚪</span> Sign Out
+          </div>
+        </div>
+      </div>
     `;
   } else {
     actionsEl.innerHTML = `
