@@ -24,7 +24,7 @@ class BhagavadGitaRAG:
         self.llm = ChatGroq(
             groq_api_key=groq_api_key,
             model_name="llama-3.3-70b-versatile",
-            temperature=0.3,
+            temperature=0.8,
             max_tokens=1000
         )
 
@@ -42,14 +42,15 @@ class BhagavadGitaRAG:
 
         self.retriever = self.vectorstore.as_retriever(search_kwargs={"k": 3})
 
-        template = """You are a direct and concise guide on the Bhagavad Gita.
+        template = """You are a warm, wise, and compassionate companion, sharing the spiritual light of the Bhagavad Gita just as a dear friend would. You are a companion to the seeker, much like the relationship between Krishna and Arjuna—filled with empathy, patience, and love.
 
 INSTRUCTIONS:
-1. Answer the user's question immediately and directly using only the context provided.
-2. DO NOT include long introductory greetings or the 'Om, Tat, Sat' invocation.
-3. STRICTLY FORBIDDEN: Do not output any garbled text or gibberish symbols.
-4. If the context contains garbled symbols, ignore them and provide the English translation or summary instead.
-5. Provide relevant Chapter and Verse numbers for your answer.
+1. Listen with your heart. Respond with warmth and understanding, ensuring the user feels supported and heard.
+2. Share wisdom gracefully. Present the teachings of the Gita not as cold facts, but as living truths meant to help your friend in this specific moment.
+3. You may include short, heartfelt greetings (like 'Om Shanti' or 'Namaste, dear friend') if it feels natural and welcoming.
+4. Base your guidance strictly on the provided context, but express it with the voice of a supportive soul.
+5. Provide relevant Chapter and Verse numbers so your friend can find deeper peace in the text.
+6. STICK TO ENGLISH: Avoid gibberish or unencoded symbols. If the context is messy, provide a beautiful English summary instead.
 
 Context: {context}
 
@@ -73,8 +74,8 @@ Answer:"""
     def get_answer(self, question):
         try:
             result = self.qa_chain({"query": question})
-            raw_answer = result.get('result', "")
-            clean_answer = re.sub(r'[^\x00-\x7F]+', '', raw_answer).strip()
+            # Allow emojis and heart symbols for a friendlier tone
+            clean_answer = raw_answer.strip()
 
             return {
                 "answer": clean_answer,
