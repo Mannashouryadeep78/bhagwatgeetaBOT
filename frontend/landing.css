@@ -7,6 +7,12 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 :root {
@@ -245,6 +251,7 @@ body {
 .hero {
   position: relative;
   min-height: 100vh;
+  min-height: 100svh; /* small viewport height — excludes iOS browser chrome */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -922,11 +929,13 @@ footer {
   .hero-title { font-size: 42px; }
   .hero-subtitle { margin-bottom: 32px; }
 
-  /* Ensure dropdown works on mobile */
+  /* Bottom sheet dropdown on mobile */
   .user-dropdown-menu {
     position: fixed;
     top: auto; bottom: 0; left: 0; right: 0;
     border-radius: 20px 20px 0 0;
+    /* Safe area: don't overlap home indicator on iPhone */
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
     animation: slideUpMobile 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
