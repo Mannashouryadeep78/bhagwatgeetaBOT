@@ -46,12 +46,12 @@ body {
   max-width: 820px;
   height: 90vh;
   background: #FAF9F6;
-  border-radius: 22px;
+  border-radius: 32px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid rgba(212,175,55,0.5);
-  box-shadow: 0 20px 60px rgba(212,175,55,0.25);
+  border: 1px solid rgba(212,175,55,0.45);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.5), 0 10px 40px rgba(212,175,55,0.15);
 }
 
 /* ===== HEADER ===== */
