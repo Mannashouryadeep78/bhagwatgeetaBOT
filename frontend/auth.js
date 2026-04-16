@@ -164,3 +164,9 @@ function applyAuthToNav() {
     `;
   }
 }
+
+// ── Auto-Initialization ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', applyAuthToNav);
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  applyAuthToNav();
+}

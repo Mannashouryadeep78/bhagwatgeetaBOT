@@ -393,34 +393,54 @@
     <script src="auth.js"></script>
     <script src="script.js"></script>
     <script>
-      // ── Render top-right nav ──────────────────────────────────────────────
-      function renderChatNav() {
+      function applyAuthToNav() {
         const user = getUser();
-        const el = document.getElementById('chatNavRight');
+        // Target both potential navbar IDs (Landing and Chat)
+        const actionsEl = document.getElementById('navActions') || document.getElementById('chatNavRight');
+        if (!actionsEl) return;
+
         if (user) {
-          const initial = user.name.charAt(0).toUpperCase();
-          const firstName = user.name.split(' ')[0];
-          el.innerHTML = `
-            <a href="profile.html" class="user-chip" style="text-decoration: none;">
-              <div class="user-chip-avatar">${initial}</div>
-              ${firstName}
-            </a>
-            <button class="btn-logout" onclick="logout()">Logout</button>
+          const displayName = user.name || user.email || "User";
+          const initials = displayName
+            .split(' ')
+            .filter(n => n)
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .substring(0, 2);
+          
+          actionsEl.innerHTML = `
+            <div class="user-profile-nav">
+              <div class="user-avatar-circle" onclick="toggleUserDropdown(event)">
+                ${initials}
+              </div>
+              <div class="user-dropdown-menu" id="userDropdownMenu">
+                <div style="padding: 4px 16px 12px; border-bottom: 1px solid rgba(212,175,55,0.1); margin-bottom: 8px;">
+                  <p style="font-size: 14px; color: #fff; font-weight: 600; margin: 0;">${displayName}</p>
+                  <p style="font-size: 11px; color: rgba(245,230,161,0.5); margin: 0;">${user.email}</p>
+                </div>
+                <a href="chat.html" class="dropdown-item">
+                  <span>💬</span> Chat with Wisdom Bot
+                </a>
+                <a href="profile.html" class="dropdown-item">
+                  <span>👤</span> View Profile
+                </a>
+                <div class="dropdown-item logout" onclick="logout()">
+                  <span>🚪</span> Sign Out
+                </div>
+              </div>
+            </div>
           `;
         } else {
-          el.innerHTML = `<a href="login.html" class="btn-login-link">Login / Register</a>`;
+          actionsEl.innerHTML = `
+            <a href="login.html" class="btn-ghost" style="text-decoration:none; margin-right:8px;">Login</a>
+            <a href="register.html" class="btn-gold" style="text-decoration:none;">Get Started</a>
+          `;
         }
       }
+      // The applyAuthToNav() is now called automatically by auth.js on load
 
-      // ── Sidebar toggle ────────────────────────────────────────────────────
-      function toggleSidebar() {
-        const sb = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sb.classList.toggle('collapsed');
-        overlay.classList.toggle('visible');
-      }
-
-      renderChatNav();
+      // --- Navbar scroll effect ---
     </script>
   </body>
 </html>
