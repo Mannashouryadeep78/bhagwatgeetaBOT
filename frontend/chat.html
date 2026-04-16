@@ -391,6 +391,12 @@
     </div><!-- end .chat-layout -->
 
     <script src="auth.js"></script>
+    <script>
+      // ── Auth Guard ────────────────────────────────────────────────────────
+      if (!isLoggedIn()) {
+        window.location.href = 'login.html?redirect=chat.html';
+      }
+    </script>
     <script src="script.js"></script>
     <script>
       function applyAuthToNav() {
