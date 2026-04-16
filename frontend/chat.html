@@ -330,87 +330,113 @@
         flex-shrink: 0;
       }
 
-      /* ── Mobile (≤768px) ────────────────────────────────────────────────── */
+      /* ═══════════════════════════════════════════════════════════════════════
+         MOBILE  (≤768px)  —  Full-screen native-app feel
+         ═══════════════════════════════════════════════════════════════════════ */
       @media (max-width: 768px) {
-        /* No position:fixed on body — it breaks iOS keyboard handling */
+
+        /* 1. Body: solid bg so nothing bleeds through the seams */
         body {
-          width: 100%;
+          background: #0D1B2A;
           overflow: hidden;
         }
 
+        /* 2. Hide the decorative krishna bg image on mobile — it causes the
+              "background peeking through" look we want to eliminate */
+        .krishna-bg { display: none; }
+
+        /* 3. Navbar: tight, full-width, flush to top */
         .chat-nav {
           padding: max(10px, env(safe-area-inset-top)) 14px 10px;
-          min-height: 52px;
+          background: #0D1B2A;
+          border-bottom: 1px solid rgba(212,175,55,0.25);
+          box-shadow: none;
+          gap: 8px;
         }
-        .chat-nav-title { font-size: 15px; }
-        .chat-nav-left a  { font-size: 12px; }
+        .chat-nav-title {
+          font-size: 14px;
+          letter-spacing: 0;
+        }
+        .chat-nav-left a { font-size: 12px; }
 
+        /* 4. Layout: zero padding — chat fills every pixel */
         .chat-layout {
           flex: 1;
           display: flex;
           flex-direction: column;
-          /* Adaptive vertical padding — shows bg but adapts to short screens */
-          padding: clamp(8px, 4vh, 48px) 12px clamp(8px, 3vh, 32px);
+          padding: 0;
           align-items: stretch;
           justify-content: flex-start;
           min-height: 0;
           overflow: hidden;
+          background: #FAF9F6;
         }
 
+        /* 5. Chat card: edge-to-edge, no rounding, no shadow */
         .chat-main {
           flex: 1;
           height: auto;
           max-width: 100%;
-          border-radius: 20px;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
           min-height: 0;
         }
 
-        .chat-main .header       { padding: 12px 16px; }
-        .chat-main .header h1    { font-size: 17px; }
-        .chat-main .header p     { font-size: 11px; }
+        /* 6. Hide the inner header — nav already identifies the app */
+        .chat-main .header { display: none; }
 
+        /* 7. Chat messages: proper padding so text never touches the edge */
         .chat-main .chat-container {
-          padding: 14px 12px;
+          padding: 16px 14px;
         }
 
+        /* 8. Input bar: full-width, safe-area aware */
         .chat-main .input-container {
-          padding: 10px 10px;
-          padding-bottom: max(12px, env(safe-area-inset-bottom));
+          padding: 10px 12px;
+          padding-bottom: max(14px, env(safe-area-inset-bottom));
           gap: 8px;
+          border-top: 1px solid rgba(212,175,55,0.3);
+          background: #fff;
         }
 
+        /* 9. Show sidebar toggle button */
         .btn-sidebar-toggle { display: flex; }
 
+        /* 10. Sidebar: slides over the chat */
         .sidebar {
           position: fixed;
           top: max(52px, calc(42px + env(safe-area-inset-top)));
           left: 0; bottom: 0;
           z-index: 200;
-          width: 280px;
+          width: 82vw;
+          max-width: 320px;
           transform: translateX(0);
-          box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+          box-shadow: 6px 0 32px rgba(0,0,0,0.6);
         }
         .sidebar.collapsed {
-          width: 280px;
           transform: translateX(-100%);
         }
 
+        /* 11. Dim overlay behind sidebar */
         .sidebar-overlay {
           display: none;
           position: fixed;
           inset: 0;
           top: max(52px, calc(42px + env(safe-area-inset-top)));
-          background: rgba(0,0,0,0.5);
+          background: rgba(0,0,0,0.55);
           z-index: 199;
+          backdrop-filter: blur(2px);
+          -webkit-backdrop-filter: blur(2px);
         }
         .sidebar-overlay.visible { display: block; }
       }
 
-      /* ── Very small screens (iPhone SE etc.) ────────────────────────────── */
-      @media (max-width: 400px) {
-        .chat-nav-title { display: none; }
-        .chat-main .header h1 { font-size: 15px; }
+      /* ── Very small screens (iPhone SE, 360px phones) ─────────────────── */
+      @media (max-width: 390px) {
+        .chat-nav-title     { font-size: 13px; }
+        .chat-nav-left a    { font-size: 11px; }
+        .chat-main .chat-container { padding: 12px 10px; }
       }
     </style>
   </head>
@@ -545,7 +571,14 @@
       }
       // The applyAuthToNav() is now called automatically by auth.js on load
 
-      // --- Navbar scroll effect ---
+      // ── Sidebar toggle ────────────────────────────────────────────────────
+      function toggleSidebar() {
+        const sidebar  = document.getElementById('sidebar');
+        const overlay  = document.getElementById('sidebarOverlay');
+        const isOpen   = !sidebar.classList.contains('collapsed');
+        sidebar.classList.toggle('collapsed', isOpen);
+        overlay.classList.toggle('visible', !isOpen);
+      }
     </script>
   </body>
 </html>
