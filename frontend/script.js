@@ -7,6 +7,31 @@ const API_URL = window.location.hostname === 'localhost' || window.location.host
 let activeHistoryId = null;
 let lastQuestion = '';   // used by retry button
 
+// ── Sync Supabase session → gita_token (handles auto-refresh) ────────────────
+async function syncSupabaseSession() {
+  if (typeof gitaSupabase === 'undefined' || !gitaSupabase) return;
+  try {
+    const { data: { session } } = await gitaSupabase.auth.getSession();
+    if (session) {
+      // Always use the SDK's current (possibly refreshed) token
+      setToken(session.access_token);
+      setUser({
+        id: session.user.id,
+        name: session.user.user_metadata?.name,
+        email: session.user.email
+      });
+      if (typeof applyAuthToNav === 'function') applyAuthToNav();
+    } else if (getToken()) {
+      // SDK says no valid session — token is truly dead, clear it
+      removeToken();
+      removeUser();
+      if (typeof applyAuthToNav === 'function') applyAuthToNav();
+    }
+  } catch (e) {
+    console.warn('Session sync failed:', e);
+  }
+}
+
 // ═════════════════════════════════════════════════════════════════════════════
 //  CHAT
 // ═════════════════════════════════════════════════════════════════════════════
@@ -157,11 +182,12 @@ async function loadHistory() {
       headers: { 'Authorization': `Bearer ${token}` }
     });
     
-    // If the server rejects the token, it's likely malformed or expired
+    // If the server rejects our token, silently show empty history.
+    // Don't force-logout — a backend hiccup or cold-start shouldn't
+    // kick the user out. A genuinely dead session is handled by
+    // syncSupabaseSession() above.
     if (res.status === 401 || res.status === 422) {
-      removeToken();
-      removeUser();
-      location.reload();
+      renderEmptyHistory();
       return;
     }
 
@@ -377,6 +403,7 @@ async function checkHealth() {
 }
 
 window.onload = async () => {
+  await syncSupabaseSession();   // refresh token if needed before any API call
   await checkHealth();
   await loadHistory();
 };
