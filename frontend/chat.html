@@ -340,7 +340,7 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <!-- Main layout -->
-    <div class="chat-layout">
+    <div class="chat-layout auth-guard-hidden" id="chatMainLayout">
 
       <!-- ── Sidebar ── -->
       <div class="sidebar collapsed" id="sidebar">
@@ -395,6 +395,13 @@
       // ── Auth Guard ────────────────────────────────────────────────────────
       if (!isLoggedIn()) {
         window.location.href = 'login.html?redirect=chat.html';
+      } else {
+        // Smoothly reveal the UI if authorized
+        const layout = document.getElementById('chatMainLayout');
+        if (layout) {
+          layout.classList.remove('auth-guard-hidden');
+          layout.classList.add('auth-guard-show');
+        }
       }
     </script>
     <script src="script.js"></script>

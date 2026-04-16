@@ -122,7 +122,10 @@ document.addEventListener('click', () => {
 
 function applyAuthToNav() {
   const user = getUser();
-  const actionsEl = document.getElementById('navActions');
+  // Target multiple potential navbar container IDs
+  const actionsEl = document.getElementById('navActions') || 
+                    document.getElementById('chatNavRight') || 
+                    document.getElementById('globalNavActions');
   if (!actionsEl) return;
 
   if (user) {
