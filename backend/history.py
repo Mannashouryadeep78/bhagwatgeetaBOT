@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from supabase_client import supabase
 
 history_bp = Blueprint('history', __name__, url_prefix='/api/history')
-
+@history_bp.route('/', methods=['GET'])
 @history_bp.route('', methods=['GET'])
 @jwt_required()
 def get_history():
