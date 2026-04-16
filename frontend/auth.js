@@ -126,7 +126,15 @@ function applyAuthToNav() {
   if (!actionsEl) return;
 
   if (user) {
-    const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+    const displayName = user.name || user.email || "User";
+    const initials = displayName
+      .split(' ')
+      .filter(n => n)
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+    
     actionsEl.innerHTML = `
       <div class="user-profile-nav">
         <div class="user-avatar-circle" onclick="toggleUserDropdown(event)">
