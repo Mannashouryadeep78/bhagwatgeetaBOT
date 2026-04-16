@@ -36,15 +36,17 @@
         <span>🪷</span> Gita Wisdom
       </a>
 
-      <ul class="nav-links" id="navLinks">
-        <li><a href="#features">Features</a></li>
-        <li><a href="#how-it-works">How it Works</a></li>
-        <li><a href="#demo">Live Demo</a></li>
-      </ul>
+      <div class="nav-menu" id="navMenu">
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how-it-works">How it Works</a></li>
+          <li><a href="#demo">Live Demo</a></li>
+        </ul>
 
-      <div class="nav-actions" id="navActions">
-        <a href="login.html" class="btn-ghost">Login</a>
-        <a href="register.html" class="btn-gold">Get Started</a>
+        <div class="nav-actions" id="navActions">
+          <a href="login.html" class="btn-ghost">Login</a>
+          <a href="register.html" class="btn-gold">Get Started</a>
+        </div>
       </div>
 
       <div class="nav-hamburger" id="hamburger" onclick="toggleMenu()">
@@ -385,15 +387,20 @@
 
       // --- Mobile menu toggle ---
       function toggleMenu() {
-        document.getElementById('navLinks').classList.toggle('open');
-        document.getElementById('navActions').classList.toggle('open');
+        const navMenu = document.getElementById('navMenu');
+        const hamburger = document.getElementById('hamburger');
+        navMenu.classList.toggle('open');
+        hamburger.classList.toggle('active');
+        // Toggle body scroll to prevent scrolling when menu is open
+        document.body.style.overflow = navMenu.classList.contains('open') ? 'hidden' : '';
       }
 
       // Close mobile menu on link click
-      document.querySelectorAll('.nav-links a').forEach(link => {
+      document.querySelectorAll('.nav-menu a').forEach(link => {
         link.addEventListener('click', () => {
-          document.getElementById('navLinks').classList.remove('open');
-          document.getElementById('navActions').classList.remove('open');
+          document.getElementById('navMenu').classList.remove('open');
+          document.getElementById('hamburger').classList.remove('active');
+          document.body.style.overflow = '';
         });
       });
 

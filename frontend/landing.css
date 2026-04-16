@@ -61,9 +61,16 @@ body {
   font-size: 20px;
   color: var(--gold-light);
   letter-spacing: 0.5px;
+  z-index: 1010;
 }
 
 .nav-logo span { font-size: 24px; }
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
 
 .nav-links {
   display: flex;
@@ -133,13 +140,25 @@ body {
   gap: 5px;
   cursor: pointer;
   padding: 4px;
+  z-index: 1010;
 }
 .nav-hamburger span {
   display: block;
   width: 24px; height: 2px;
   background: var(--gold-light);
   border-radius: 2px;
-  transition: all 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nav-hamburger.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.nav-hamburger.active span:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+.nav-hamburger.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 /* User Profile Dropdown */
@@ -828,32 +847,63 @@ footer {
 }
 
 @media (max-width: 768px) {
-  .nav-links {
+  .nav-menu {
     display: none;
     flex-direction: column;
-    position: absolute;
-    top: 100%;
-    left: 0; right: 0;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(13, 27, 42, 0.98);
-    backdrop-filter: blur(16px);
-    padding: 32px 6%;
-    gap: 24px;
-    border-bottom: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    z-index: 1000;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 100px 6% 40px;
+    gap: 40px;
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    transform: translateY(-10px);
+  }
+
+  .nav-menu.open {
+    display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+  }
+
+  .nav-links a {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--gold-light);
   }
 
   .nav-actions {
-    display: none;
-    padding: 16px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     width: 100%;
-    justify-content: center;
-    border-top: 1px solid rgba(212,175,55,0.1);
-    margin-top: 10px;
+    max-width: 300px;
+    padding: 32px 0 0;
+    border-top: 1px solid rgba(212,175,55,0.15);
   }
 
-  .nav-links.open { display: flex; }
-  .nav-actions.open { display: flex; }
+  .nav-actions .btn-ghost, 
+  .nav-actions .btn-gold {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    text-align: center;
+  }
 
   .nav-hamburger { display: flex; }
 
