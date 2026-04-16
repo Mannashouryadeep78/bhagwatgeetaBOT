@@ -254,8 +254,9 @@ function newChat() {
   document.getElementById('chatContainer').innerHTML = `
     <div class="message bot-message">
       <div class="message-content">
-        🙏 Namaste! I am your guide to the Bhagavad Gita. Ask me about duty,
-        karma, devotion, or life wisdom.
+        🙏 Namaste! I am your companion on this journey through the Gita. 
+        How are you feeling today? Tell me what's on your heart, and together 
+        we shall find wisdom in the words of Shri Krishna.
       </div>
     </div>`;
   const input = document.getElementById('questionInput');
