@@ -1,29 +1,15 @@
 /* ===== AUTH PAGES (Login, Register, Profile) ===== */
 
-*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'Poppins', sans-serif;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 24px;
-  position: relative;
-  overflow-x: hidden;
-}
-
 .auth-page {
-  font-family: 'Poppins', sans-serif;
   min-height: 100vh;
   background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 80px 20px 40px;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .auth-bg {
@@ -57,7 +43,6 @@ body {
 .auth-card {
   position: relative;
   z-index: 1;
-  margin-top: 80px;
   background: rgba(13,27,42,0.92);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(212,175,55,0.3);
@@ -256,8 +241,13 @@ body {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@media (max-width: 600px) {
+  .auth-page { padding: 70px 16px 32px; }
+}
+
 @media (max-width: 480px) {
-  .auth-card { padding: 36px 24px; }
+  .auth-card { padding: 32px 20px; border-radius: 18px; }
+  .auth-card h1 { font-size: 22px; }
   .form-row { grid-template-columns: 1fr; }
 }
 
@@ -273,10 +263,9 @@ body {
 .profile-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
-  padding: 80px 20px 20px;
-  font-family: 'Poppins', sans-serif;
+  padding: 80px 20px 40px;
   background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
 }
 

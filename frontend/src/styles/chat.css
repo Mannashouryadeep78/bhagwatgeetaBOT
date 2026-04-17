@@ -1,30 +1,16 @@
 /* ===== CHAT PAGE ===== */
 
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
-  height: 100%;
-  height: -webkit-fill-available;
-  overflow: hidden;
-  -webkit-text-size-adjust: 100%;
-}
-
-/* Chat page root */
+/* Chat page root — fixed viewport, self-contained */
 .chat-page {
-  height: 100%;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
   font-family: 'Poppins', sans-serif;
   -webkit-tap-highlight-color: transparent;
+  z-index: 0;
 }
 
 /* Krishna background image */
@@ -211,13 +197,14 @@ html {
 .chat-layout {
   display: flex;
   flex: 1;
-  justify-content: center;
-  align-items: center;
-  padding: 28px 20px 20px;
+  min-height: 0;
   overflow: hidden;
+  padding: 20px;
   position: relative;
   z-index: 1;
-  min-height: 0;
+  gap: 0;
+  align-items: stretch;
+  justify-content: center;
 }
 
 /* ── Sidebar ── */
@@ -226,14 +213,17 @@ html {
   flex-shrink: 0;
   background: rgba(9, 19, 32, 0.97);
   border-right: 1px solid rgba(212,175,55,0.2);
+  border-radius: 32px 0 0 32px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transition: transform 0.3s ease, width 0.3s ease;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  min-height: 0;
 }
 
 .sidebar.collapsed {
   width: 0;
+  opacity: 0;
   border-right: none;
 }
 
@@ -397,10 +387,9 @@ html {
 
 /* ── Chat main area ── */
 .chat-main {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   max-width: 820px;
-  height: 85vh;
-  height: 85dvh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -614,6 +603,13 @@ html {
 .sidebar-overlay.visible { display: block; }
 
 /* ═══════════════════════════════════════════════════════
+   TABLET (≤1024px)
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .chat-layout { padding: 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════
    MOBILE (≤768px) — Full-screen native-app feel
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
@@ -632,25 +628,17 @@ html {
   .chat-nav-left a { font-size: 12px; }
 
   .chat-layout {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
     padding: 0;
     align-items: stretch;
     justify-content: flex-start;
-    min-height: 0;
-    overflow: hidden;
     background: #FAF9F6;
   }
 
   .chat-main {
-    flex: 1;
-    height: auto;
     max-width: 100%;
     border-radius: 0;
     border: none;
     box-shadow: none;
-    min-height: 0;
   }
 
   .chat-main-header { display: none; }
@@ -683,6 +671,7 @@ html {
 
   .btn-sidebar-toggle { display: flex; }
 
+  /* Sidebar slides in over content on mobile */
   .sidebar {
     position: fixed;
     top: max(52px, calc(42px + env(safe-area-inset-top)));
@@ -690,13 +679,17 @@ html {
     z-index: 200;
     width: 82vw;
     max-width: 320px;
+    border-radius: 0;
+    opacity: 1;
     transform: translateX(0);
     box-shadow: 6px 0 32px rgba(0,0,0,0.6);
+    transition: transform 0.3s ease;
   }
 
   .sidebar.collapsed {
     width: 82vw;
     max-width: 320px;
+    opacity: 1;
     transform: translateX(-100%);
   }
 

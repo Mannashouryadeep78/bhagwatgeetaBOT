@@ -60,9 +60,14 @@ export default function Chat() {
   const inputRef = useRef(null)
 
   useEffect(() => {
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [])
+
+  useEffect(() => {
     checkHealth()
     loadHistory()
-    // close dropdown on outside click
     const handler = () => setDropdownOpen(false)
     document.addEventListener('click', handler)
     return () => document.removeEventListener('click', handler)
