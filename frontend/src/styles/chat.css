@@ -598,7 +598,7 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Mobile overlay behind sidebar */
+/* Mobile overlay behind sidebar — hidden on desktop */
 .sidebar-overlay {
   display: none;
   position: fixed;
@@ -609,7 +609,10 @@
   -webkit-backdrop-filter: blur(2px);
 }
 
-.sidebar-overlay.visible { display: block; }
+/* Only show overlay on mobile — on desktop the sidebar is in-layout */
+@media (max-width: 768px) {
+  .sidebar-overlay.visible { display: block; }
+}
 
 /* ═══════════════════════════════════════════════════════
    TABLET (≤1024px)
@@ -712,8 +715,17 @@
     left: 0;
     right: 0;
     border-radius: 20px 20px 0 0;
-    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    min-width: unset;
+    padding: 16px 12px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    z-index: 10001;
     animation: slideUpSheet 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .chat-nav-right .dropdown-item {
+    min-height: 52px;
+    font-size: 15px;
+    padding: 12px 16px;
   }
 
   @keyframes slideUpSheet {

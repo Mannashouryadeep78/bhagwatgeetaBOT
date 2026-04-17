@@ -15,6 +15,7 @@ export default function Landing() {
   const [vod, setVod] = useState(null)
 
   const stepsRef = useRef([])
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40)
@@ -23,9 +24,17 @@ export default function Landing() {
   }, [])
 
   useEffect(() => {
-    const handler = () => setDropdownOpen(false)
-    document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    document.addEventListener('touchstart', handler, { passive: true })
+    return () => {
+      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('touchstart', handler)
+    }
   }, [])
 
   // Intersection observer for step reveal
@@ -96,10 +105,10 @@ export default function Landing() {
 
           <div className="nav-actions" id="navActions">
             {user ? (
-              <div className="user-profile-nav">
+              <div className="user-profile-nav" ref={dropdownRef}>
                 <div
                   className="user-avatar-circle"
-                  onClick={e => { e.stopPropagation(); setDropdownOpen(o => !o) }}
+                  onClick={() => setDropdownOpen(o => !o)}
                 >
                   {initials}
                 </div>
@@ -141,7 +150,7 @@ export default function Landing() {
 
       {/* ===== HERO ===== */}
       <section className="hero">
-        <video autoPlay muted loop playsInline className="hero-video">
+        <video autoPlay muted loop playsInline className="hero-video" poster="/images/krishna2.png">
           <source src="/videos/krishnavideo.mp4" type="video/mp4" />
         </video>
         <div className="hero-overlay" />

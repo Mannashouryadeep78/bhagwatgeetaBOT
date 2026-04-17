@@ -58,6 +58,7 @@ export default function Chat() {
 
   const chatEndRef = useRef(null)
   const inputRef = useRef(null)
+  const dropdownRef = useRef(null)
 
   useEffect(() => {
     const prev = document.body.style.overflow
@@ -68,8 +69,14 @@ export default function Chat() {
   useEffect(() => {
     checkHealth()
     loadHistory()
-    const handler = () => setDropdownOpen(false)
-    document.addEventListener('click', handler)
+    // Close dropdown only when clicking outside the dropdown container
+    const handler = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    document.addEventListener('touchstart', handler, { passive: true })
 
     const onResize = () => {
       if (window.innerWidth <= 768) setSidebarOpen(false)
@@ -77,7 +84,8 @@ export default function Chat() {
     window.addEventListener('resize', onResize)
 
     return () => {
-      document.removeEventListener('click', handler)
+      document.removeEventListener('mousedown', handler)
+      document.removeEventListener('touchstart', handler)
       window.removeEventListener('resize', onResize)
     }
   }, [])
@@ -262,10 +270,10 @@ export default function Chat() {
         <div className="chat-nav-title">🪷 Gita Wisdom</div>
         <div className="chat-nav-right">
           {user ? (
-            <div className="user-profile-nav">
+            <div className="user-profile-nav" ref={dropdownRef}>
               <div
                 className="user-avatar-circle"
-                onClick={e => { e.stopPropagation(); setDropdownOpen(o => !o) }}
+                onClick={() => setDropdownOpen(o => !o)}
               >
                 {initials}
               </div>
