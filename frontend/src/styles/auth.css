@@ -1,0 +1,403 @@
+/* ===== AUTH PAGES (Login, Register, Profile) ===== */
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.auth-page {
+  font-family: 'Poppins', sans-serif;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  background: url('/images/krishna2.png') center/cover no-repeat;
+  opacity: 0.18;
+  z-index: 0;
+}
+
+/* Top navbar on auth pages */
+.auth-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #1B2A4E, #0D1B2A);
+  border-bottom: 1px solid rgba(212,175,55,0.35);
+  z-index: 1000;
+  height: 60px;
+}
+
+.auth-nav-logo {
+  color: rgba(245,230,161,0.65);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  margin-top: 80px;
+  background: rgba(13,27,42,0.92);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 24px;
+  padding: 48px 44px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+
+.auth-card.register { max-width: 460px; }
+
+.card-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  color: #F5E6A1;
+  text-align: center;
+  margin-bottom: 8px;
+  text-decoration: none;
+  display: block;
+}
+
+.card-sub {
+  text-align: center;
+  color: rgba(245,230,161,0.5);
+  font-size: 13px;
+  margin-bottom: 36px;
+  font-weight: 300;
+}
+
+.auth-card h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 26px;
+  color: #fff;
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.auth-card .subtitle {
+  text-align: center;
+  color: rgba(245,230,161,0.4);
+  font-size: 13px;
+  margin-bottom: 28px;
+  font-weight: 300;
+}
+
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+  display: block;
+  font-size: 12px;
+  color: rgba(212,175,55,0.8);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(212,175,55,0.25);
+  background: rgba(255,255,255,0.05);
+  color: #FAF9F6;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #D4AF37;
+  background: rgba(212,175,55,0.06);
+}
+
+.form-group input::placeholder { color: rgba(245,230,161,0.3); }
+.form-group input.input-error { border-color: rgba(220,53,69,0.7); }
+
+.error-msg {
+  background: rgba(220,53,69,0.12);
+  border: 1px solid rgba(220,53,69,0.4);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #ff8a95;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #D4AF37, #F5E6A1);
+  color: #0D1B2A;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(212,175,55,0.45);
+}
+
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.auth-divider {
+  text-align: center;
+  margin: 22px 0;
+  color: rgba(245,230,161,0.3);
+  font-size: 13px;
+  position: relative;
+}
+
+.auth-divider::before, .auth-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%; width: 38%; height: 1px;
+  background: rgba(212,175,55,0.15);
+}
+
+.auth-divider::before { left: 0; }
+.auth-divider::after { right: 0; }
+
+.btn-guest {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: 1.5px solid rgba(212,175,55,0.4);
+  border-radius: 50px;
+  color: #F5E6A1;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-guest:hover {
+  border-color: #D4AF37;
+  background: rgba(212,175,55,0.08);
+}
+
+.footer-text {
+  text-align: center;
+  color: rgba(245,230,161,0.45);
+  font-size: 13px;
+  margin-top: 20px;
+}
+
+.footer-text a { color: #D4AF37; text-decoration: none; }
+.footer-text a:hover { text-decoration: underline; }
+
+/* Register perks */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.perks {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(212,175,55,0.05);
+  border: 1px solid rgba(212,175,55,0.15);
+  border-radius: 10px;
+}
+
+.perk {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: rgba(245,230,161,0.65);
+}
+
+.perk-icon { color: #D4AF37; }
+
+/* Loading spinner */
+.loading-spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(13,27,42,0.4);
+  border-top-color: #0D1B2A;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .auth-card { padding: 36px 24px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+/* ===== PROFILE PAGE ===== */
+.profile-bg {
+  position: fixed;
+  inset: 0;
+  background: url('/images/krishna2.png') center/cover no-repeat;
+  opacity: 1;
+  z-index: -1;
+}
+
+.profile-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 80px 20px 20px;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0D1B2A, #1B2A4E);
+}
+
+.profile-card {
+  background: #FAF9F6;
+  width: 100%;
+  max-width: 480px;
+  border-radius: 22px;
+  padding: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  border: 1px solid rgba(212,175,55,0.3);
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #D4AF37, #F5E6A1);
+  color: #0D1B2A;
+  font-size: 32px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  box-shadow: 0 4px 15px rgba(212,175,55,0.4);
+}
+
+.profile-header h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 24px;
+  color: #1B2A4E;
+  margin-bottom: 4px;
+}
+
+.profile-header p {
+  font-size: 14px;
+  color: #666;
+}
+
+.profile-form-group {
+  margin-bottom: 20px;
+}
+
+.profile-form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1B2A4E;
+  margin-bottom: 6px;
+}
+
+.profile-form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid rgba(212,175,55,0.2);
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.profile-form-group input:focus {
+  border-color: #D4AF37;
+}
+
+.profile-divider {
+  height: 1px;
+  background: rgba(212,175,55,0.15);
+  margin: 32px 0;
+}
+
+.btn-save {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #D4AF37, #F5E6A1);
+  border: none;
+  border-radius: 12px;
+  color: #0D1B2A;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+}
+
+.btn-save:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212,175,55,0.4);
+}
+
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-back {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  color: #D4AF37;
+  text-decoration: none;
+  font-size: 14px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Poppins', sans-serif;
+  width: 100%;
+}
+
+.btn-back:hover { text-decoration: underline; }
+
+.message-box {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.message-success { background: #e6fffa; color: #234e52; border: 1px solid #81e6d9; }
+.message-error { background: #fff5f5; color: #742a2a; border: 1px solid #feb2b2; }

@@ -17,6 +17,7 @@ data/*.pdf
 # --- Node ---
 frontend/node_modules/
 node_modules/
+frontend/dist/
 
 # --- OS Specific ---
 .DS_Store
