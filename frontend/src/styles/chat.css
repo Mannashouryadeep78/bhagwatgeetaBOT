@@ -55,7 +55,7 @@
 .chat-nav-left a:hover { color: #D4AF37; }
 
 .btn-sidebar-toggle {
-  display: none;
+  display: flex;
   background: transparent;
   border: 1px solid rgba(212,175,55,0.3);
   border-radius: 8px;
@@ -63,11 +63,13 @@
   color: rgba(245,230,161,0.7);
   font-size: 16px;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
   line-height: 1;
+  align-items: center;
+  justify-content: center;
 }
 
-.btn-sidebar-toggle:hover { border-color: #D4AF37; color: #D4AF37; }
+.btn-sidebar-toggle:hover { border-color: #D4AF37; color: #D4AF37; background: rgba(212,175,55,0.08); }
 
 .chat-nav-title {
   font-family: 'Cinzel', serif;
@@ -212,7 +214,8 @@
   width: 272px;
   flex-shrink: 0;
   background: rgba(9, 19, 32, 0.97);
-  border-right: 1px solid rgba(212,175,55,0.2);
+  border: 1px solid rgba(212,175,55,0.45);
+  border-right: none;
   border-radius: 32px 0 0 32px;
   display: flex;
   flex-direction: column;
@@ -224,7 +227,13 @@
 .sidebar.collapsed {
   width: 0;
   opacity: 0;
-  border-right: none;
+  border: none;
+}
+
+/* When sidebar is open, remove chat-main's left radius to form unified card */
+.sidebar:not(.collapsed) + .chat-main {
+  border-radius: 0 32px 32px 0;
+  border-left: none;
 }
 
 .sidebar-header {
@@ -668,8 +677,6 @@
     padding: 11px 16px;
     font-size: 14px;
   }
-
-  .btn-sidebar-toggle { display: flex; }
 
   /* Sidebar slides in over content on mobile */
   .sidebar {

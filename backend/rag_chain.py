@@ -75,13 +75,58 @@ Answer:"""
             return_source_documents=True
         )
 
-    def get_answer(self, question):
+    def get_answer(self, question, conversation_history=None):
         try:
-            result = self.qa_chain({"query": question})
-            raw_answer = result.get('result', "")
-            # Allow emojis and heart symbols for a friendlier tone
-            clean_answer = raw_answer.strip()
+            # If conversation history is present, build a history-aware prompt
+            if conversation_history and len(conversation_history) > 0:
+                docs = self.retriever.invoke(question)
+                context = "\n\n".join([doc.page_content for doc in docs])
 
+                history_lines = []
+                for msg in conversation_history[-8:]:  # last 4 exchanges
+                    role = "Seeker" if msg.get('role') == 'user' else "Krishna's Voice"
+                    content = msg.get('content', '')[:600]  # cap long answers
+                    history_lines.append(f"{role}: {content}")
+                history_str = "\n".join(history_lines)
+
+                prompt_text = f"""You are a warm, soulful, and wise companion—a spiritual friend walking beside the seeker on the path of life. Your voice is filled with the empathy and love of Shri Krishna.
+
+PERSONALITY & TONE:
+- Be a friend first, a teacher second.
+- Use warm, supportive language ("I hear you", "My dear friend", "It's beautiful that you ask that").
+- Speak naturally, not like a robot.
+- IMPORTANT: Remember the previous exchanges and refer to them naturally when relevant. Build on what was already said.
+
+CONVERSATIONAL LOGIC:
+1. GREETINGS: For small talk or hellos, respond warmly as a friend. Don't force a verse.
+2. LIFE WISDOM: For struggles or deep questions, offer comfort first, then weave in the Gita's wisdom.
+3. CONTINUITY: Connect the current question to earlier topics when it fits naturally.
+4. CITATIONS: Include Chapter and Verse numbers when quoting the Gita.
+
+Previous Conversation:
+{history_str}
+
+Context from the Bhagavad Gita:
+{context}
+
+Current Question: {question}
+
+Answer:"""
+
+                response = self.llm.invoke(prompt_text)
+                clean_answer = response.content.strip()
+
+                return {
+                    "answer": clean_answer,
+                    "source_documents": [
+                        {"content": doc.page_content, "metadata": doc.metadata}
+                        for doc in docs
+                    ]
+                }
+
+            # No history — use original RetrievalQA chain
+            result = self.qa_chain({"query": question})
+            clean_answer = result.get('result', "").strip()
             return {
                 "answer": clean_answer,
                 "source_documents": [
@@ -89,5 +134,6 @@ Answer:"""
                     for doc in result['source_documents']
                 ]
             }
+
         except Exception as e:
             return {"answer": f"Error: {str(e)}", "source_documents": []}

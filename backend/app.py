@@ -71,11 +71,12 @@ def chat():
     try:
         data = request.json
         question = (data.get('question') or '').strip()
+        conversation_history = data.get('conversation_history') or []
 
         if not question:
             return jsonify({'error': 'No question provided'}), 400
 
-        result = rag_system.get_answer(question)
+        result = rag_system.get_answer(question, conversation_history)
         answer = result['answer']
 
         # Save to history if user is logged in (Supabase JWT verification)

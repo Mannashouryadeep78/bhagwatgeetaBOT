@@ -53,7 +53,7 @@ export default function Chat() {
   const [inputValue, setInputValue] = useState('')
   const [isSending, setIsSending] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(() => window.innerWidth > 768)
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const chatEndRef = useRef(null)
@@ -70,7 +70,16 @@ export default function Chat() {
     loadHistory()
     const handler = () => setDropdownOpen(false)
     document.addEventListener('click', handler)
-    return () => document.removeEventListener('click', handler)
+
+    const onResize = () => {
+      if (window.innerWidth <= 768) setSidebarOpen(false)
+    }
+    window.addEventListener('resize', onResize)
+
+    return () => {
+      document.removeEventListener('click', handler)
+      window.removeEventListener('resize', onResize)
+    }
   }, [])
 
   useEffect(() => {
@@ -131,10 +140,16 @@ export default function Chat() {
       const token = getToken()
       if (token) headers['Authorization'] = `Bearer ${token}`
 
+      // Send last 8 messages (4 exchanges) as conversation context, excluding init + errors
+      const conversation_history = messages
+        .filter(m => m.id !== 'init' && !m.isError)
+        .slice(-8)
+        .map(m => ({ role: m.sender === 'user' ? 'user' : 'assistant', content: m.content }))
+
       const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ question }),
+        body: JSON.stringify({ question, conversation_history }),
       })
 
       setIsTyping(false)
@@ -174,6 +189,7 @@ export default function Chat() {
 
   function loadConversation(id, question, answer) {
     setActiveHistoryId(id)
+    setLastQuestion(question)
     setMessages([
       INIT_MSG,
       { id: 'q-' + id, content: question, sender: 'user' },
