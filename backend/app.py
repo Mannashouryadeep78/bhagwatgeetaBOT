@@ -107,6 +107,15 @@ def health():
     return jsonify({'status': 'healthy', 'message': 'Bhagavad Gita RAG system is running'})
 
 
+@app.route('/api/debug/supabase', methods=['GET'])
+def debug_supabase():
+    return jsonify({
+        'supabase_connected': supabase is not None,
+        'supabase_url_set': bool(os.environ.get('SUPABASE_URL')),
+        'supabase_key_set': bool(os.environ.get('SUPABASE_KEY')),
+    })
+
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'

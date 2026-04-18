@@ -162,9 +162,9 @@ export default function Chat() {
         addErrorMsg('You\'re asking too fast! Please wait a moment before trying again.')
       } else if (response.ok) {
         addMsg(data.answer, 'bot')
-        if (data.conversation_id) {
+        if (user) {
           const newItem = {
-            id: data.conversation_id,
+            id: data.conversation_id || `local-${Date.now()}`,
             question,
             answer: data.answer,
             created_at: new Date().toISOString(),
