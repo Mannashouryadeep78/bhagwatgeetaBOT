@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { API_URL, getToken } from '../lib/api.js'
@@ -58,7 +59,7 @@ export default function Chat() {
 
   const chatEndRef = useRef(null)
   const inputRef = useRef(null)
-  const dropdownRef = useRef(null)
+  const avatarRef = useRef(null)
 
   useEffect(() => {
     const prev = document.body.style.overflow
@@ -69,25 +70,11 @@ export default function Chat() {
   useEffect(() => {
     checkHealth()
     loadHistory()
-    // Close dropdown only when clicking outside the dropdown container
-    const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handler)
-    document.addEventListener('touchstart', handler, { passive: true })
-
     const onResize = () => {
       if (window.innerWidth <= 768) setSidebarOpen(false)
     }
     window.addEventListener('resize', onResize)
-
-    return () => {
-      document.removeEventListener('mousedown', handler)
-      document.removeEventListener('touchstart', handler)
-      window.removeEventListener('resize', onResize)
-    }
+    return () => window.removeEventListener('resize', onResize)
   }, [])
 
   useEffect(() => {
@@ -270,27 +257,13 @@ export default function Chat() {
         <div className="chat-nav-title">🪷 Gita Wisdom</div>
         <div className="chat-nav-right">
           {user ? (
-            <div className="user-profile-nav" ref={dropdownRef}>
+            <div className="user-profile-nav">
               <div
+                ref={avatarRef}
                 className="user-avatar-circle"
                 onClick={() => setDropdownOpen(o => !o)}
               >
                 {initials}
-              </div>
-              <div className={`user-dropdown-menu${dropdownOpen ? ' visible' : ''}`}>
-                <div style={{ padding: '4px 16px 12px', borderBottom: '1px solid rgba(212,175,55,0.1)', marginBottom: 8 }}>
-                  <p style={{ fontSize: 14, color: '#fff', fontWeight: 600, margin: 0 }}>{user.name}</p>
-                  <p style={{ fontSize: 11, color: 'rgba(245,230,161,0.5)', margin: 0 }}>{user.email}</p>
-                </div>
-                <Link to="/chat" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <span>💬</span> Chat with Wisdom Bot
-                </Link>
-                <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
-                  <span>👤</span> View Profile
-                </Link>
-                <div className="dropdown-item logout" onClick={handleLogout}>
-                  <span>🚪</span> Sign Out
-                </div>
               </div>
             </div>
           ) : (
@@ -439,6 +412,46 @@ export default function Chat() {
           </div>
         </div>
       </div>
+
+      {/* Portal dropdown — rendered in document.body, escapes all stacking contexts */}
+      {dropdownOpen && user && createPortal(
+        <>
+          <div
+            style={{ position: 'fixed', inset: 0, zIndex: 9998 }}
+            onClick={() => setDropdownOpen(false)}
+          />
+          <div
+            className="portal-dropdown"
+            style={
+              window.innerWidth <= 768
+                ? { position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999 }
+                : avatarRef.current
+                  ? {
+                      position: 'fixed',
+                      top: avatarRef.current.getBoundingClientRect().bottom + 8,
+                      right: window.innerWidth - avatarRef.current.getBoundingClientRect().right,
+                      zIndex: 9999,
+                    }
+                  : { position: 'fixed', top: 60, right: 20, zIndex: 9999 }
+            }
+          >
+            <div style={{ padding: '4px 16px 12px', borderBottom: '1px solid rgba(212,175,55,0.1)', marginBottom: 8 }}>
+              <p style={{ fontSize: 14, color: '#fff', fontWeight: 600, margin: 0 }}>{user.name}</p>
+              <p style={{ fontSize: 11, color: 'rgba(245,230,161,0.5)', margin: 0 }}>{user.email}</p>
+            </div>
+            <Link to="/chat" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <span>💬</span> Chat with Wisdom Bot
+            </Link>
+            <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <span>👤</span> View Profile
+            </Link>
+            <div className="dropdown-item logout" onClick={handleLogout}>
+              <span>🚪</span> Sign Out
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
     </div>
   )
 }

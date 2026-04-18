@@ -202,8 +202,6 @@
   min-height: 0;
   overflow: hidden;
   padding: 20px;
-  position: relative;
-  z-index: 1;
   gap: 0;
   align-items: stretch;
   justify-content: center;
@@ -597,6 +595,29 @@
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Portal dropdown (renders in document.body, escapes stacking contexts) ── */
+.portal-dropdown {
+  background: #0D1B2A;
+  border: 1px solid rgba(212,175,55,0.3);
+  border-radius: 14px;
+  min-width: 220px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.65);
+}
+
+@media (max-width: 768px) {
+  .portal-dropdown {
+    border-radius: 20px 20px 0 0;
+    min-width: unset;
+    padding: 16px 12px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+    animation: slideUpSheet 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
 
 /* Mobile overlay behind sidebar — hidden on desktop */
 .sidebar-overlay {
