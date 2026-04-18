@@ -75,10 +75,6 @@ export default function Login() {
           </button>
         </form>
 
-        <div className="auth-divider">or</div>
-
-        <Link to="/chat" className="btn-guest">Continue without account &nbsp;→</Link>
-
         <p className="footer-text" style={{ marginTop: 28 }}>
           Don&apos;t have an account? <Link to="/register">Create one free</Link>
         </p>

@@ -202,7 +202,8 @@ export default function Chat() {
   }
 
   async function deleteHistoryItem(id) {
-    const token = getToken()
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token || getToken()
     if (!token) return
     try {
       const res = await fetch(`${API_URL}/history/${id}`, {
@@ -218,7 +219,8 @@ export default function Chat() {
 
   async function clearAllHistory() {
     if (!confirm('Clear all conversation history? This cannot be undone.')) return
-    const token = getToken()
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token || getToken()
     if (!token) return
     try {
       const res = await fetch(`${API_URL}/history/clear`, {
