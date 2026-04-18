@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { API_URL, getToken } from '../lib/api.js'
+import { supabase } from '../lib/supabase.js'
 import '../styles/chat.css'
 
 const INIT_MSG = {
@@ -69,13 +70,17 @@ export default function Chat() {
 
   useEffect(() => {
     checkHealth()
-    loadHistory()
     const onResize = () => {
       if (window.innerWidth <= 768) setSidebarOpen(false)
     }
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, [])
+
+  // Reload history whenever auth state resolves or changes
+  useEffect(() => {
+    loadHistory()
+  }, [user])
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -91,9 +96,11 @@ export default function Chat() {
   }
 
   async function loadHistory() {
-    const token = getToken()
-    if (!token) { setHistoryItems([]); return }
     try {
+      // Always use a fresh session token — localStorage cache can be stale/expired
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token || getToken()
+      if (!token) { setHistoryItems([]); return }
       const res = await fetch(`${API_URL}/history`, {
         headers: { Authorization: `Bearer ${token}` },
       })
@@ -132,7 +139,8 @@ export default function Chat() {
 
     try {
       const headers = { 'Content-Type': 'application/json' }
-      const token = getToken()
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token || getToken()
       if (token) headers['Authorization'] = `Bearer ${token}`
 
       // Send last 8 messages (4 exchanges) as conversation context, excluding init + errors

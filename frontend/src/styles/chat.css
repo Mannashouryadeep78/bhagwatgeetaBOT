@@ -647,7 +647,12 @@
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .chat-page { background: #0D1B2A; }
-  .krishna-bg { display: none; }
+  .krishna-bg {
+    background-image: url('/images/krishnamobile.jpg');
+    background-size: cover;
+    background-position: center top;
+    opacity: 0.18;
+  }
 
   .chat-nav {
     padding: max(10px, env(safe-area-inset-top)) 14px 10px;

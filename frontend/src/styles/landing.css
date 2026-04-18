@@ -839,14 +839,18 @@ footer {
 }
 .footer-bottom a:hover { color: var(--gold); }
 
-/* ===== MOBILE VIDEO: show full video, no crop ===== */
+/* ===== VIDEO: desktop shows desktop video, mobile shows mobile video ===== */
+.hero-video-desktop { display: block; }
+.hero-video-mobile  { display: none; }
+
 @media (max-width: 768px) {
-  .hero {
-    background: #060e18;
+  .hero-video-desktop { display: none; }
+  .hero-video-mobile  {
+    display: block;
+    object-fit: cover;
+    object-position: center top;
   }
-  .hero-video {
-    object-fit: contain;
-    object-position: center center;
+  .hero {
     background: #060e18;
   }
   .hero-overlay {

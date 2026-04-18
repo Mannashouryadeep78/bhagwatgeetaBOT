@@ -124,8 +124,11 @@ export default function Landing() {
 
       {/* ===== HERO ===== */}
       <section className="hero">
-        <video autoPlay muted loop playsInline className="hero-video" poster="/images/krishna2.png">
+        <video autoPlay muted loop playsInline className="hero-video hero-video-desktop" poster="/images/krishna2.png">
           <source src="/videos/krishnavideo.mp4" type="video/mp4" />
+        </video>
+        <video autoPlay muted loop playsInline className="hero-video hero-video-mobile" poster="/images/krishnamobile.jpg">
+          <source src="/videos/krishnamobilevideo.mp4" type="video/mp4" />
         </video>
         <div className="hero-overlay" />
 
